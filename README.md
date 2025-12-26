@@ -2,7 +2,7 @@
 
 **IdioRAG** (from the Greek *idios*, meaning "one's own") is an **API-first** Retrieval-Augmented Generation (RAG) framework built for **private, user-isolated queries**. 
 
-IdioRAG is designed to function as a backend microservice. It treats privacy as a first-class citizen by ensuring that personal documents and queries are cryptographically tied to specific users through JWT authentication and database-level isolation.
+IdioRAG is designed to function as a backend microservice. It treats privacy as a first-class citizen by ensuring that personal documents and queries are tied to specific users through authentication and database-level isolation.
 
 ## Core Features
 
