@@ -9,7 +9,7 @@ IdioRAG is designed to function as a backend microservice. It treats privacy as 
 *   **API-Only Architecture**: A headless service built with [FastAPI](fastapi.tiangolo.com) designed to be consumed by other applications—no built-in UI, just pure, documented endpoints.
 *   **Identity-Centric Retrieval**: Strict user isolation ensures queries only retrieve context from the specific user's own document namespace.
 *   **JWT-Based Authentication**: Seamlessly extracts user identity and permissions directly from JWT keys provided by upstream applications.
-*   **LlamaIndex Orchestration**: Leverages [LlamaIndex](www.llamaindex.ai) for sophisticated data ingestion, indexing, and retrieval logic.
+*   **LlamaIndex Orchestration**: Leverages [LlamaIndex](www.llamaindex.ai) for data ingestion, indexing, and retrieval logic.
 *   **Postgres + pgvector**: Scalable, reliable vector storage using [pgvector](github.com) for efficient similarity searches.
 *   **LLM Agnostic**: Communicates with external LLMs (optimized for **Qwen3 14B** in 2025) via OpenAI-compatible APIs, allowing for easy model swapping.
 
