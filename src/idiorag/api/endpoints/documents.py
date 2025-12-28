@@ -100,11 +100,22 @@ async def create_document(
     )
     
     db.add(db_document)
-    await db.flush()
+    await db.commit()
+    await db.refresh(db_document)
     
-    # TODO: Index document in vector store
-    # from ...rag.indexing import index_document
-    # await index_document(doc_id, document.content, user.user_id, document.metadata)
+    # Index document in vector store
+    try:
+        from ...rag import index_document
+        await index_document(
+            document_id=doc_id,
+            content=document.content,
+            user_id=user.user_id,
+            metadata=document.metadata
+        )
+        logger.info(f"Document indexed successfully: {doc_id}")
+    except Exception as e:
+        logger.error(f"Error indexing document {doc_id}: {e}")
+        # Don't fail the request if indexing fails - document is still in DB
     
     logger.info(f"Document created successfully: {doc_id}")
     
@@ -268,9 +279,14 @@ async def delete_document(
             detail="Document not found"
         )
     
-    # TODO: Delete from vector store
-    # from ...rag.indexing import delete_document
-    # await delete_document(document_id, user.user_id)
+    # Delete from vector store
+    try:
+        from ...rag import delete_document_from_index
+        await delete_document_from_index(document_id, user.user_id)
+    except Exception as e:
+        logger.warning(f"Error deleting document from vector store: {e}")
+        # Continue with DB deletion even if vector deletion fails
     
     await db.delete(document)
+    await db.commit()
     logger.info(f"Document deleted: {document_id}")

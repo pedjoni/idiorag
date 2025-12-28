@@ -69,23 +69,40 @@ async def query_rag(
     """
     logger.info(f"Processing query for user {user.user_id}: {request.query[:100]}")
     
-    # TODO: Implement RAG query logic
-    # from ...rag.query_engine import query_with_context
-    # response = await query_with_context(
-    #     query=request.query,
-    #     user_id=user.user_id,
-    #     max_tokens=request.max_tokens,
-    #     temperature=request.temperature,
-    #     top_k=request.top_k
-    # )
-    
-    # Placeholder response
-    return QueryResponse(
-        query=request.query,
-        answer="This is a placeholder response. RAG implementation coming soon.",
-        context=[],
-        tokens_used=None
-    )
+    try:
+        from ...rag import query_with_context
+        
+        response_data = await query_with_context(
+            query=request.query,
+            user_id=user.user_id,
+            top_k=request.top_k,
+            max_tokens=request.max_tokens,
+            temperature=request.temperature,
+        )
+        
+        return QueryResponse(
+            query=response_data["query"],
+            answer=response_data["answer"],
+            context=[
+                ContextChunk(
+                    document_id=chunk["document_id"],
+                    content=chunk["content"],
+                    score=chunk["score"],
+                    metadata=chunk.get("metadata"),
+                )
+                for chunk in response_data["context"]
+            ],
+            tokens_used=response_data.get("tokens_used"),
+        )
+    except Exception as e:
+        logger.error(f"Error processing query: {e}", exc_info=True)
+        # Return error message as answer
+        return QueryResponse(
+            query=request.query,
+            answer=f"Error processing query: {str(e)}",
+            context=[],
+            tokens_used=None
+        )
 
 
 @router.post(

@@ -11,9 +11,6 @@ __pycache__/
 .env.local
 .env.*.local
 
-# Internal documentation (setup-specific, private notes)
-docs/internal/
-
 # IDE
 .vscode/
 .idea/

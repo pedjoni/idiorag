@@ -184,6 +184,7 @@ Apache License 2.0 - See [LICENSE](LICENSE) for details.
 ### Phase 3: Advanced Features 📋
 - [ ] Implement custom chunking strategies
 - [ ] Batch document upload endpoint
+- [ ] Sync endpoint with upsert logic (avoid duplicates using source field)
 - [ ] Advanced metadata extraction
 - [ ] Query optimization for hierarchical data
 

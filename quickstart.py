@@ -18,7 +18,8 @@ async def test_api():
     print("🧪 Testing IdioRAG API...")
     print("=" * 60)
     
-    async with httpx.AsyncClient() as client:
+    # Use longer timeout for RAG queries (embedding + vector search + LLM can take time)
+    async with httpx.AsyncClient(timeout=60.0) as client:
         # 1. Health Check
         print("\n1. Testing health check...")
         try:
@@ -79,7 +80,8 @@ async def test_api():
             response = await client.post(
                 f"{base_url}/api/v1/documents/",
                 json=doc_data,
-                headers=headers
+                headers=headers,
+                timeout=30.0  # Add explicit timeout
             )
             if response.status_code == 201:
                 doc = response.json()
@@ -91,7 +93,9 @@ async def test_api():
                 print(f"   Response: {response.text}")
                 return False
         except Exception as e:
-            print(f"❌ Document creation error: {e}")
+            print(f"❌ Document creation error: {type(e).__name__}: {e}")
+            import traceback
+            traceback.print_exc()
             return False
         
         # 4. List documents
@@ -139,12 +143,20 @@ async def test_api():
             )
             if response.status_code == 200:
                 result = response.json()
+                answer = result['answer']
                 print("✅ Query endpoint responded")
-                print(f"   Answer: {result['answer'][:100]}...")
+                print(f"   Answer: {answer[:100]}...")
+                if "Error processing query" in answer:
+                    print("❌ Query returned an error instead of answer")
+                    return False
             else:
                 print(f"❌ Query failed: {response.status_code}")
+                return False
         except Exception as e:
-            print(f"❌ Query error: {e}")
+            print(f"❌ Query error: {type(e).__name__}: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
         
         # 7. Delete document
         print("\n7. Deleting test document...")
