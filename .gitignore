@@ -6,6 +6,42 @@ __pycache__/
 # C extensions
 *.so
 
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Internal documentation (setup-specific, private notes)
+docs/internal/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# uv
+uv.lock
+.python-version
+
 # Distribution / packaging
 .Python
 build/
