@@ -175,11 +175,13 @@ Apache License 2.0 - See [LICENSE](LICENSE) for details.
 - [x] Basic CRUD endpoints
 - [x] LlamaIndex integration scaffold
 
-### Phase 2: RAG Implementation 🚧
-- [ ] Complete vector store integration
-- [ ] Implement query engine
-- [ ] Add embedding generation
-- [ ] Test end-to-end RAG pipeline
+### Phase 2: RAG Implementation ✅
+- [x] Vector store integration with pgvector
+- [x] Document indexing with automatic chunking
+- [x] Custom OpenAI-compatible LLM wrapper
+- [x] Query engine with semantic search
+- [x] LLM-powered answer generation with sources
+- [x] End-to-end RAG pipeline tested
 
 ### Phase 3: Advanced Features 📋
 - [ ] Implement custom chunking strategies
