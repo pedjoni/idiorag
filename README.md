@@ -103,21 +103,6 @@ idiorag/
 └── run.py                      # Application runner
 ```
 
-## Key Features Implementation Status
-
-- ✅ FastAPI application structure
-- ✅ JWT authentication with user extraction
-- ✅ Database models with user isolation
-- ✅ Document CRUD endpoints
-- ✅ Configuration management
-- ✅ LlamaIndex integration scaffold
-- 🚧 Vector store with pgvector (needs testing)
-- 🚧 RAG query implementation (scaffold in place)
-- 🚧 Custom chunking strategies (documented, needs implementation)
-- 📋 Streaming responses
-- 📋 Production deployment
-- 📋 Comprehensive testing
-
 ## API Endpoints
 
 ### Authentication
@@ -147,10 +132,15 @@ response = requests.post(
     "http://localhost:8000/api/v1/documents",
     headers=headers,
     json={
-        "title": "Meeting Notes - Q1 Planning",
-        "content": "Discussed strategy for the upcoming quarter...",
-        "doc_type": "note",
-        "metadata": {"category": "business", "date": "2025-01-15"}
+        "title": "Lake Michigan - Bass Fishing",
+        "content": "Caught 3 largemouth bass using green pumpkin senko in 8-10ft near weed edges. Morning bite was best between 8-10 AM.",
+        "doc_type": "fishing_log",
+        "metadata": {
+            "location": "Lake Michigan",
+            "date": "2025-01-15",
+            "species": ["largemouth_bass"],
+            "lures": ["senko"]
+        }
     }
 )
 
@@ -159,7 +149,7 @@ response = requests.post(
     "http://localhost:8000/api/v1/query",
     headers=headers,
     json={
-        "query": "What were the key action items?",
+        "query": "What lures work best for bass?",
         "top_k": 5
     }
 )

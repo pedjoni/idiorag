@@ -65,42 +65,48 @@ def decode_test_token(token: str) -> Dict:
     return payload
 
 
-def format_structured_content(
+def format_fishing_log_content(
     date: str,
     location: str,
-    context: str,
+    weather: str,
     events: list,
-    notes: str = "",
+    comments: str = "",
 ) -> str:
-    """Format structured data into a well-organized text.
+    """Format fishing log data into a well-structured text.
     
     Args:
-        date: Entry date
-        location: Location description
-        context: Contextual information (e.g., weather, conditions)
+        date: Log date
+        location: Fishing location
+        weather: Weather description
         events: List of event dictionaries
-        notes: Additional notes
+        comments: Additional comments
     
     Returns:
-        str: Formatted content
+        str: Formatted fishing log content
     """
-    content = f"""Entry: {date}
+    content = f"""Fishing Log: {date}
 Location: {location}
-Context: {context}
+Weather: {weather}
 
 """
     
-    if notes:
-        content += f"Notes: {notes}\n\n"
+    if comments:
+        content += f"Comments: {comments}\n\n"
     
     content += "Events:\n"
     for i, event in enumerate(events, 1):
         content += f"\n{i}. {event['type'].upper()} - {event.get('time', 'N/A')}\n"
         
-        # Add any additional event fields dynamically
-        for key, value in event.items():
-            if key not in ['type', 'time']:
-                content += f"   - {key.replace('_', ' ').title()}: {value}\n"
+        if 'species' in event:
+            content += f"   - Species: {event['species']}\n"
+        if 'size' in event:
+            content += f"   - Size: {event['size']}\n"
+        if 'lure' in event:
+            content += f"   - Lure: {event['lure']}\n"
+        if 'structure' in event:
+            content += f"   - Structure: {event['structure']}\n"
+        if 'details' in event:
+            content += f"   - Details: {event['details']}\n"
     
     return content
 

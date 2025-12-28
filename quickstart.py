@@ -40,8 +40,8 @@ async def test_api():
         try:
             from idiorag.utils import generate_test_token
             token = generate_test_token(
-                user_id="test_user_123",
-                email="user@example.com"
+                user_id="test_fisher_123",
+                email="fisher@example.com"
             )
             print("✅ Test token generated")
             print(f"   Token: {token[:50]}...")
@@ -54,23 +54,24 @@ async def test_api():
         # 3. Create a document
         print("\n3. Creating a test document...")
         doc_data = {
-            "title": "Q1 2025 Planning Meeting",
+            "title": "Lake Michigan - Bass Fishing",
             "content": """
-            Meeting Notes: January 15, 2025
-            Location: Conference Room B
-            Attendees: Team Leadership
+            Fishing Log: January 15, 2025
+            Location: Lake Michigan, North Shore
+            Weather: Sunny, 65°F, light wind
             
-            Discussed quarterly objectives and key initiatives.
-            Priorities include improving customer onboarding experience
-            and expanding product features based on user feedback.
-            Action items assigned to respective team leads.
+            Caught 3 largemouth bass using green pumpkin senko.
+            Fish were active near weed edges in 8-10ft of water.
+            Best bite was in the morning between 8-10 AM.
+            Water temp: 68°F, slight chop on surface.
             """,
-            "doc_type": "meeting_notes",
+            "doc_type": "fishing_log",
             "metadata": {
-                "category": "planning",
+                "location": "Lake Michigan",
                 "date": "2025-01-15",
-                "attendees": ["leadership_team"],
-                "tags": ["quarterly_planning", "objectives"]
+                "species": ["largemouth_bass"],
+                "lures": ["senko"],
+                "weather": "sunny"
             }
         }
         
@@ -131,7 +132,7 @@ async def test_api():
             response = await client.post(
                 f"{base_url}/api/v1/query/",
                 json={
-                    "query": "What were the main priorities discussed?",
+                    "query": "What lures work best for bass?",
                     "top_k": 5
                 },
                 headers=headers
