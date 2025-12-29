@@ -116,7 +116,7 @@ All endpoints except `/health` require JWT Bearer token authentication.
 
 ### Query
 - `POST /api/v1/query` - Query the RAG system
-- `POST /api/v1/query/chat` - Chat with streaming (coming soon)
+- `POST /api/v1/query/chat` - Chat with streaming (Phase 3)
 
 ## Usage Example
 
@@ -184,9 +184,10 @@ Apache License 2.0 - See [LICENSE](LICENSE) for details.
 - [x] End-to-end RAG pipeline tested
 
 ### Phase 3: Advanced Features 📋
-- [ ] Implement custom chunking strategies
-- [ ] Batch document upload endpoint
+- [ ] Streaming response implementation (real-time token streaming)
+- [ ] Custom chunking strategies for structured data
 - [ ] Sync endpoint with upsert logic (avoid duplicates using source field)
+- [ ] Batch document upload endpoint
 - [ ] Advanced metadata extraction
 - [ ] Query optimization for hierarchical data
 

@@ -103,8 +103,15 @@ sudo ss -tlnp | grep 5433
 sudo lsof -i :5433
 ```
 
-**Note**: WSL doesn't use systemd by default, so you need to start the service manually each time you restart WSL, or add it to your `.bashrc` or `.zshrc`:
+**Note**: By default, PostgreSQL is configured to start automatically (set in `/etc/postgresql/17/main/start.conf`). If PostgreSQL doesn't auto-start for you, you can either:
 
+1. Verify the auto-start configuration:
+```bash
+cat /etc/postgresql/17/main/start.conf
+# Should show "auto" - if it shows "manual" or "disabled", change it to "auto"
+```
+
+2. Or add to your `.bashrc` or `.zshrc`:
 ```bash
 echo "sudo service postgresql start" >> ~/.bashrc
 ```
@@ -370,7 +377,21 @@ sudo ss -tlnp | grep 5433
 
 ## Starting PostgreSQL Automatically
 
-To avoid manually starting PostgreSQL each time, add to your `~/.bashrc`:
+**Good news**: PostgreSQL is configured to auto-start by default! The installation sets `/etc/postgresql/17/main/start.conf` to `auto`.
+
+To verify auto-start is enabled:
+```bash
+cat /etc/postgresql/17/main/start.conf
+# Should output: auto
+```
+
+If it shows `manual` or `disabled`, change it to `auto`:
+```bash
+echo "auto" | sudo tee /etc/postgresql/17/main/start.conf
+sudo service postgresql restart
+```
+
+**Alternative method** - Add to your `~/.bashrc` (only needed if auto-start isn't working):
 
 ```bash
 # Start PostgreSQL if not running
@@ -379,7 +400,7 @@ if ! sudo service postgresql status > /dev/null 2>&1; then
 fi
 ```
 
-Or configure passwordless sudo for the PostgreSQL service by adding to `/etc/sudoers` (use `sudo visudo`):
+**For passwordless sudo**, add to `/etc/sudoers` (use `sudo visudo`):
 
 ```
 %sudo ALL=(ALL) NOPASSWD: /usr/sbin/service postgresql *

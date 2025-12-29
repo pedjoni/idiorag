@@ -143,19 +143,26 @@ Completed on December 28, 2025.
 
 ### Phase 3: Advanced Features
 
-1. **Custom Chunking**
+1. **Streaming Response Implementation**
+   - Implement `stream_complete()` in `OpenAICompatibleLLM` class
+   - Add `query_with_context_stream()` function in RAG module
+   - Wire up `/api/v1/query/chat` endpoint with SSE (Server-Sent Events)
+   - Support real-time token streaming for improved UX
+   - Maintain user isolation in streaming context
+
+2. **Custom Chunking**
    - Create `rag/fishing_chunker.py`
    - Implement event-level chunking
    - Add hybrid chunking support
    - Test with real fishing logs
 
-2. **Sync & Deduplication**
+3. **Sync & Deduplication**
    - Add `/api/v1/sync` endpoint with upsert logic
    - Use `source` field to track external document IDs
    - Prevent duplicate documents during sync
    - Handle updates to existing documents
 
-3. **Specialized Endpoints**
+4. **Specialized Endpoints**
    - Batch document upload endpoint
    - Advanced metadata extraction
    - Query optimization for hierarchical data
