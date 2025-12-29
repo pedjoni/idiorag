@@ -48,6 +48,9 @@ class OpenAICompatibleLLM(CustomLLM):
     
     async def acomplete(self, prompt: str, **kwargs: Any) -> CompletionResponse:
         """Complete asynchronously."""
+        # Stop sequences can be overridden via kwargs or use empty list
+        stop_sequences = kwargs.get("stop", [])
+        
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 f"{self.api_base}/completions",
@@ -57,6 +60,7 @@ class OpenAICompatibleLLM(CustomLLM):
                     "prompt": prompt,
                     "temperature": kwargs.get("temperature", self.temperature),
                     "max_tokens": kwargs.get("max_tokens", self.max_tokens),
+                    "stop": stop_sequences,
                 },
                 timeout=60.0,
             )
@@ -65,8 +69,48 @@ class OpenAICompatibleLLM(CustomLLM):
             return CompletionResponse(text=result["choices"][0]["text"])
     
     def stream_complete(self, prompt: str, **kwargs: Any):
-        """Stream complete - not implemented yet."""
-        raise NotImplementedError("Streaming not implemented")
+        """Stream complete synchronously - not used in async app."""
+        raise NotImplementedError("Use astream_complete for async operations")
+    
+    async def astream_complete(self, prompt: str, **kwargs: Any):
+        """Stream complete asynchronously.
+        
+        Yields completion response deltas as they arrive from the LLM.
+        """
+        import json
+        
+        # Stop sequences can be overridden via kwargs or use empty list
+        stop_sequences = kwargs.get("stop", [])
+        
+        async with httpx.AsyncClient() as client:
+            async with client.stream(
+                "POST",
+                f"{self.api_base}/completions",
+                headers={"Authorization": f"Bearer {self.api_key}"},
+                json={
+                    "model": self.model_name,
+                    "prompt": prompt,
+                    "temperature": kwargs.get("temperature", self.temperature),
+                    "max_tokens": kwargs.get("max_tokens", self.max_tokens),
+                    "stream": True,
+                    "stop": stop_sequences,
+                },
+                timeout=60.0,
+            ) as response:
+                response.raise_for_status()
+                async for line in response.aiter_lines():
+                    line = line.strip()
+                    if not line or line == "data: [DONE]":
+                        continue
+                    if line.startswith("data: "):
+                        try:
+                            data = json.loads(line[6:])
+                            if "choices" in data and len(data["choices"]) > 0:
+                                delta = data["choices"][0].get("text", "")
+                                if delta:
+                                    yield CompletionResponse(text=delta, delta=delta)
+                        except json.JSONDecodeError:
+                            continue
 
 
 
@@ -267,6 +311,7 @@ async def query_with_context(
     top_k: int = 5,
     max_tokens: Optional[int] = None,
     temperature: Optional[float] = None,
+    use_cot: bool = False,
 ) -> dict:
     """Query the RAG system with user's context.
     
@@ -276,12 +321,13 @@ async def query_with_context(
         top_k: Number of context chunks to retrieve
         max_tokens: Maximum tokens in response
         temperature: LLM temperature
+        use_cot: Enable chain-of-thought reasoning
     
     Returns:
         dict: Response with answer, context chunks, and metadata
     """
     try:
-        logger.info(f"Processing query for user {user_id}: {query[:100]}")
+        logger.info(f"Processing query for user {user_id}: {query[:100]}" + (" (CoT enabled)" if use_cot else ""))
         
         # Initialize models
         get_embedding_model()
@@ -293,11 +339,32 @@ async def query_with_context(
         # Create index from vector store
         index = VectorStoreIndex.from_vector_store(vector_store)
         
-        # Create query engine
+        # Create query engine with custom prompt
+        from llama_index.core import PromptTemplate
+        
+        if use_cot:
+            # Chain-of-thought prompt: reason first, then answer
+            qa_prompt_tmpl = PromptTemplate(
+                "You are a helpful assistant. Answer the user's question based only on the provided context.\n\n"
+                "Context:\n{context_str}\n\n"
+                "Question: {query_str}\n\n"
+                "Think step-by-step about the information, then provide your final answer after 'Final Answer:'.\\n\\n"
+                "Reasoning:"
+            )
+        else:
+            # Direct answer prompt
+            qa_prompt_tmpl = PromptTemplate(
+                "You are a helpful assistant. Answer the user's question based only on the provided context. Be direct and concise.\n\n"
+                "Context:\n{context_str}\n\n"
+                "Question: {query_str}\n\n"
+                "Provide a brief, direct answer (2-3 sentences maximum):"
+            )
+        
         # Note: User isolation is handled by metadata in nodes during indexing
         query_engine = index.as_query_engine(
             similarity_top_k=top_k,
             llm=llm,
+            text_qa_template=qa_prompt_tmpl,
         )
         
         # Override settings if provided
@@ -332,3 +399,119 @@ async def query_with_context(
     except Exception as e:
         logger.error(f"Error processing query: {e}", exc_info=True)
         raise
+
+
+async def query_with_context_stream(
+    query: str,
+    user_id: str,
+    top_k: int = 5,
+    max_tokens: Optional[int] = None,
+    temperature: Optional[float] = None,
+    use_cot: bool = False,
+):
+    """Query the RAG system with streaming response.
+    
+    Yields:
+        dict: Events with type 'context', 'token', or 'done'
+            - context: {"type": "context", "chunks": [...]}
+            - token: {"type": "token", "content": "..."}
+            - done: {"type": "done"}
+    
+    Args:
+        query: User query
+        user_id: User identifier for context isolation
+        top_k: Number of context chunks to retrieve
+        max_tokens: Maximum tokens in response
+        temperature: LLM temperature
+        use_cot: Enable chain-of-thought reasoning
+    """
+    try:
+        logger.info(f"Processing streaming query for user {user_id}: {query[:100]}" + (" (CoT enabled)" if use_cot else ""))
+        
+        # Initialize models
+        get_embedding_model()
+        llm = get_llm()
+        
+        # Override settings if provided
+        if temperature is not None:
+            llm.temperature = temperature
+        if max_tokens is not None:
+            llm.max_tokens = max_tokens
+        
+        # Get vector store with user isolation
+        vector_store = get_vector_store(user_id)
+        
+        # Create index from vector store
+        index = VectorStoreIndex.from_vector_store(vector_store)
+        
+        # Retrieve context chunks first
+        retriever = index.as_retriever(similarity_top_k=top_k)
+        nodes = await retriever.aretrieve(query)
+        
+        # Format and send context
+        context_chunks = []
+        for node in nodes:
+            context_chunks.append({
+                "document_id": node.metadata.get("document_id", "unknown"),
+                "content": node.text,
+                "score": node.score or 0.0,
+                "metadata": node.metadata,
+            })
+        
+        yield {
+            "type": "context",
+            "chunks": context_chunks
+        }
+        
+        # Build prompt with context
+        context_str = "\n\n".join([
+            f"[Source {i+1}] {chunk['content']}"
+            for i, chunk in enumerate(context_chunks)
+        ])
+        
+        if use_cot:
+            # Chain-of-thought prompt: reason first, then answer
+            prompt = f"""You are a helpful assistant. Answer the user's question based only on the provided context.
+
+Context:
+{context_str}
+
+Question: {query}
+
+Think step-by-step about the information, then provide your final answer after "Final Answer:".
+
+Reasoning:"""
+        else:
+            # Direct answer prompt
+            prompt = f"""You are a helpful assistant. Answer the user's question based only on the provided context. Be direct and concise.
+
+Context:
+{context_str}
+
+Question: {query}
+
+Provide a brief, direct answer (2-3 sentences maximum):"""
+        
+        # Stream the response (don't await, it's an async generator)
+        # Use configured stop sequences for direct mode, none for CoT
+        settings = get_settings()
+        stop_sequences = [] if use_cot else settings.llm_stop_sequences
+        
+        async for response in llm.astream_complete(prompt, stop=stop_sequences):
+            if response.delta:
+                yield {
+                    "type": "token",
+                    "content": response.delta
+                }
+        
+        # Signal completion
+        yield {"type": "done"}
+        
+        logger.info(f"Streaming query completed for user {user_id}")
+        
+    except Exception as e:
+        logger.error(f"Error processing streaming query: {e}", exc_info=True)
+        yield {
+            "type": "error",
+            "message": str(e)
+        }

@@ -56,6 +56,20 @@ class Settings(BaseSettings):
     llm_api_key: str | None = Field(default=None, description="API key for LLM service")
     llm_temperature: float = Field(default=0.7, ge=0.0, le=2.0, description="LLM temperature")
     llm_max_tokens: int = Field(default=2048, gt=0, description="Maximum tokens for LLM response")
+    llm_stop_sequences: List[str] = Field(
+        default=["\n\nOkay,", "\n\nLet me", "\n\nWait,", "\n\nHowever,"],
+        description="Stop sequences to prevent model rambling (model-specific)"
+    )
+    
+    @field_validator("llm_stop_sequences", mode="before")
+    @classmethod
+    def parse_stop_sequences(cls, v: str | List[str]) -> List[str]:
+        """Parse stop sequences from string or list."""
+        if isinstance(v, str):
+            if not v.strip():
+                return []
+            return [seq.strip() for seq in v.strip("[]").replace('"', "").split(",")]
+        return v
 
     # JWT
     jwt_secret_key: str = Field(..., description="Secret key for JWT validation (HS256)")

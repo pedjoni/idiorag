@@ -18,9 +18,10 @@ class QueryRequest(BaseModel):
     """Request model for RAG query."""
     
     query: str = Field(..., min_length=1, max_length=2000, description="User query")
-    max_tokens: int | None = Field(default=None, ge=1, le=4096, description="Maximum tokens in response")
-    temperature: float | None = Field(default=None, ge=0.0, le=2.0, description="LLM temperature")
+    max_tokens: int | None = Field(default=256, ge=1, le=4096, description="Maximum tokens in response")
+    temperature: float | None = Field(default=0.7, ge=0.0, le=2.0, description="LLM temperature")
     top_k: int = Field(default=5, ge=1, le=20, description="Number of context chunks to retrieve")
+    use_cot: bool = Field(default=False, description="Enable chain-of-thought reasoning for complex queries")
 
 
 class ContextChunk(BaseModel):
@@ -78,6 +79,7 @@ async def query_rag(
             top_k=request.top_k,
             max_tokens=request.max_tokens,
             temperature=request.temperature,
+            use_cot=request.use_cot,
         )
         
         return QueryResponse(
@@ -118,6 +120,12 @@ async def chat_stream(
     
     Returns a Server-Sent Events stream for real-time responses.
     
+    The stream sends events in the following format:
+    - context: Initial context chunks retrieved
+    - token: Individual tokens as they're generated
+    - done: Signals completion
+    - error: Error message if something fails
+    
     Args:
         request: Query request with parameters
         user: Current authenticated user
@@ -126,15 +134,26 @@ async def chat_stream(
     Returns:
         StreamingResponse: SSE stream with answer chunks
     """
-    # TODO: Implement streaming response
-    # from fastapi.responses import StreamingResponse
-    # from ...rag.query_engine import query_stream
-    # 
-    # async def generate():
-    #     async for chunk in query_stream(request.query, user.user_id):
-    #         yield f"data: {chunk}\n\n"
-    # 
-    # return StreamingResponse(generate(), media_type="text/event-stream")
+    from fastapi.responses import StreamingResponse
+    from ...rag import query_with_context_stream
+    import json
     
-    logger.info(f"Chat stream requested by user {user.user_id}")
-    return {"message": "Streaming implementation coming soon"}
+    logger.info(f"Chat stream requested by user {user.user_id}: {request.query[:100]}")
+    
+    async def generate():
+        try:
+            async for event in query_with_context_stream(
+                query=request.query,
+                user_id=user.user_id,
+                top_k=request.top_k,
+                max_tokens=request.max_tokens,
+                temperature=request.temperature,
+                use_cot=request.use_cot,
+            ):
+                # Send as Server-Sent Event
+                yield f"data: {json.dumps(event)}\n\n"
+        except Exception as e:
+            logger.error(f"Error in chat stream: {e}", exc_info=True)
+            yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+    
+    return StreamingResponse(generate(), media_type="text/event-stream")
