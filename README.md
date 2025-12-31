@@ -131,14 +131,17 @@ idiorag/
 │       └── rag/
 │           ├── __init__.py      # LlamaIndex integration
 │           └── chunkers/        # Pluggable chunking strategies
+├── tests/
+│   ├── test_setup.py            # Installation verification
+│   └── test_streaming.py        # Streaming endpoint tests
 ├── examples/
+│   ├── quickstart.py            # Quick start API demo
 │   └── fishing/                 # FishingLogChunker reference implementation
 ├── docs/
 │   └── internal/                # Internal documentation
 ├── .env.example                 # Environment template
 ├── requirements.txt             # Dependencies
 ├── pyproject.toml              # Project metadata (uv)
-├── DEVELOPMENT.md              # Development guide
 └── run.py                      # Application runner
 ```
 
@@ -210,45 +213,6 @@ This is an early-stage project. The framework is designed to be:
 ## License
 
 Apache License 2.0 - See [LICENSE](LICENSE) for details.
-
-## Roadmap
-
-### Phase 1: Core Framework ✅
-- [x] FastAPI application
-- [x] JWT authentication
-- [x] Database with user isolation
-- [x] Basic CRUD endpoints
-- [x] LlamaIndex integration
-
-### Phase 2: RAG Implementation ✅
-- [x] Vector store integration with pgvector
-- [x] Document indexing with automatic chunking
-- [x] Custom OpenAI-compatible LLM wrapper
-- [x] Query engine with semantic search
-- [x] LLM-powered answer generation with sources
-- [x] End-to-end RAG pipeline tested
-
-### Phase 3: Advanced Features ✅
-- [x] Streaming response with Server-Sent Events
-- [x] Chain-of-Thought reasoning support
-- [x] Configurable LLM behavior (stop sequences, temperature)
-- [x] Pluggable chunking architecture
-- [x] FishingLogChunker reference implementation
-- [x] Custom chunking documentation and testing
-
-### Phase 4: Production Features 📋
-- [ ] Sync endpoint with upsert logic (avoid duplicates)
-- [ ] Batch document upload endpoint
-- [ ] Advanced metadata filtering in queries
-- [ ] Query optimization and caching
-- [ ] Comprehensive testing suite
-
-### Phase 5: Production Ready 📋
-- [ ] Performance optimization and benchmarking
-- [ ] Production deployment guide
-- [ ] Monitoring and observability
-- [ ] Alembic database migrations
-- [ ] Security hardening
 
 ## Support
 
