@@ -60,10 +60,10 @@ uv sync
 
 ```bash
 # Run the verification script
-uv run python test_setup.py
+uv run python tests/test_setup.py
 
 # Or if venv is activated
-python test_setup.py
+python tests/test_setup.py
 ```
 
 ## Key Differences

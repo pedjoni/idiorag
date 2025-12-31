@@ -46,8 +46,12 @@ idiorag/
 ├── 🔧 pyproject.toml         ← Project metadata
 │
 ├── 🏃 run.py                 ← Start the app
-├── 🧪 test_setup.py          ← Verify setup
-├── 🧪 quickstart.py          ← Test API
+├── tests/
+│   ├── test_setup.py        ← Verify setup
+│   └── test_streaming.py    ← Test streaming
+├── examples/
+│   ├── quickstart.py        ← API demo
+│   └── fishing/             ← Custom chunker example
 │
 └── src/idiorag/
     ├── main.py               ← FastAPI app
@@ -136,7 +140,7 @@ CREATE EXTENSION vector;
 
 ```bash
 # Verify setup
-python test_setup.py
+python tests/test_setup.py
 
 # Test API (requires app running)
 python quickstart.py
@@ -233,7 +237,7 @@ See [FISHING_LOGS.md](FISHING_LOGS.md) for chunking strategies.
 ### App won't start
 - Check `.env` file exists and has required variables
 - Verify PostgreSQL is running and accessible
-- Check `python test_setup.py` for errors
+- Check `python tests/test_setup.py` for errors
 
 ### Database connection fails
 - Verify DATABASE_URL format: `postgresql+asyncpg://...`

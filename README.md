@@ -12,6 +12,9 @@ IdioRAG is designed to function as a backend microservice. It treats privacy as 
 *   **LlamaIndex Orchestration**: Leverages [LlamaIndex](www.llamaindex.ai) for data ingestion, indexing, and retrieval logic.
 *   **Postgres + pgvector**: Scalable, reliable vector storage using [pgvector](github.com) for efficient similarity searches.
 *   **LLM Agnostic**: Communicates with external LLMs (optimized for **Qwen3 14B** in 2025) via OpenAI-compatible APIs, allowing for easy model swapping.
+*   **Streaming Responses**: Real-time token streaming with Server-Sent Events for responsive UX.
+*   **Pluggable Chunking**: Extensible architecture for domain-specific document processing strategies.
+*   **Chain-of-Thought**: Optional reasoning mode for more detailed, step-by-step answers.
 
 ## Tech Stack
 
@@ -69,12 +72,42 @@ uvicorn src.idiorag.main:app --reload --host 0.0.0.0 --port 8000
 
 ```bash
 # Run setup verification tests
-python test_setup.py
+python tests/test_setup.py
 
 # Access the API
 # - API: http://localhost:8000
 # - Interactive docs: http://localhost:8000/docs
 # - Health check: http://localhost:8000/health
+```
+
+## Architecture
+
+### User Isolation
+
+IdioRAG enforces strict user isolation at multiple levels:
+- **JWT-based**: User ID extracted from JWT token on every request
+- **Database-level**: All queries filtered by `user_id`
+- **Vector store**: Metadata includes `user_id` for isolation
+- **No cross-user access**: Users can only see/query their own data
+
+### Data Flow
+
+```
+User Request (with JWT)
+    ↓
+JWT Middleware (extract user_id)
+    ↓
+API Endpoint
+    ↓
+┌─────────────────────┬──────────────────────┐
+│   Document Upload   │    Query Request     │
+└─────────────────────┴──────────────────────┘
+         ↓                        ↓
+    1. Store in DB         1. Embed query
+    2. Create chunks       2. Search vectors (filtered by user_id)
+    3. Generate embeddings 3. Retrieve context
+    4. Store in vector DB  4. Send to LLM
+    5. Return success      5. Return answer + context
 ```
 
 ## Documentation
@@ -96,9 +129,15 @@ idiorag/
 │       ├── api/
 │       │   └── endpoints/       # API endpoints
 │       └── rag/
-│           └── __init__.py      # LlamaIndex integration
+│           ├── __init__.py      # LlamaIndex integration
+│           └── chunkers/        # Pluggable chunking strategies
+├── examples/
+│   └── fishing/                 # FishingLogChunker reference implementation
+├── docs/
+│   └── internal/                # Internal documentation
 ├── .env.example                 # Environment template
 ├── requirements.txt             # Dependencies
+├── pyproject.toml              # Project metadata (uv)
 ├── DEVELOPMENT.md              # Development guide
 └── run.py                      # Application runner
 ```
@@ -115,8 +154,12 @@ All endpoints except `/health` require JWT Bearer token authentication.
 - `DELETE /api/v1/documents/{id}` - Delete a document
 
 ### Query
-- `POST /api/v1/query` - Query the RAG system
-- `POST /api/v1/query/chat` - Chat with streaming (Phase 3)
+- `POST /api/v1/query` - Query with LLM-generated answers
+  - Supports `use_cot` parameter for Chain-of-Thought reasoning
+  - Returns answer with source documents
+- `POST /api/v1/query/chat` - Streaming query with Server-Sent Events
+  - Real-time token streaming
+  - Same CoT support as `/query`
 
 ## Usage Example
 
@@ -127,32 +170,34 @@ import requests
 token = "your-jwt-token"
 headers = {"Authorization": f"Bearer {token}"}
 
-# Upload a document
+# Upload a document with custom chunker
 response = requests.post(
     "http://localhost:8000/api/v1/documents",
     headers=headers,
     json={
-        "title": "Lake Michigan - Bass Fishing",
-        "content": "Caught 3 largemouth bass using green pumpkin senko in 8-10ft near weed edges. Morning bite was best between 8-10 AM.",
-        "doc_type": "fishing_log",
-        "metadata": {
-            "location": "Lake Michigan",
-            "date": "2025-01-15",
-            "species": ["largemouth_bass"],
-            "lures": ["senko"]
-        }
+        "title": "Detroit River - June 15 2024",
+        "content": '{"session": {...}, "location": {...}, "events": [...]}',  # Enriched JSON
+        "chunker": "fishing_log",  # Uses FishingLogChunker
+        "metadata": {"session_date": "2024-06-15"}
     }
 )
 
-# Query the system
+# Query with streaming
+import sseclient
+
 response = requests.post(
-    "http://localhost:8000/api/v1/query",
+    "http://localhost:8000/api/v1/query/chat",
     headers=headers,
     json={
-        "query": "What lures work best for bass?",
-        "top_k": 5
-    }
+        "query": "What lures work best for smallmouth bass in June?",
+        "use_cot": True  # Enable Chain-of-Thought reasoning
+    },
+    stream=True
 )
+
+client = sseclient.SSEClient(response)
+for event in client.events():
+    print(event.data, end='', flush=True)
 ```
 
 ## Contributing
@@ -173,7 +218,7 @@ Apache License 2.0 - See [LICENSE](LICENSE) for details.
 - [x] JWT authentication
 - [x] Database with user isolation
 - [x] Basic CRUD endpoints
-- [x] LlamaIndex integration scaffold
+- [x] LlamaIndex integration
 
 ### Phase 2: RAG Implementation ✅
 - [x] Vector store integration with pgvector
@@ -183,20 +228,27 @@ Apache License 2.0 - See [LICENSE](LICENSE) for details.
 - [x] LLM-powered answer generation with sources
 - [x] End-to-end RAG pipeline tested
 
-### Phase 3: Advanced Features 📋
-- [ ] Streaming response implementation (real-time token streaming)
-- [ ] Custom chunking strategies for structured data
-- [ ] Sync endpoint with upsert logic (avoid duplicates using source field)
-- [ ] Batch document upload endpoint
-- [ ] Advanced metadata extraction
-- [ ] Query optimization for hierarchical data
+### Phase 3: Advanced Features ✅
+- [x] Streaming response with Server-Sent Events
+- [x] Chain-of-Thought reasoning support
+- [x] Configurable LLM behavior (stop sequences, temperature)
+- [x] Pluggable chunking architecture
+- [x] FishingLogChunker reference implementation
+- [x] Custom chunking documentation and testing
 
-### Phase 4: Production Ready 📋
-- [ ] Comprehensive testing
-- [ ] Performance optimization
+### Phase 4: Production Features 📋
+- [ ] Sync endpoint with upsert logic (avoid duplicates)
+- [ ] Batch document upload endpoint
+- [ ] Advanced metadata filtering in queries
+- [ ] Query optimization and caching
+- [ ] Comprehensive testing suite
+
+### Phase 5: Production Ready 📋
+- [ ] Performance optimization and benchmarking
 - [ ] Production deployment guide
-- [ ] Monitoring and logging
-- [ ] Alembic migrations
+- [ ] Monitoring and observability
+- [ ] Alembic database migrations
+- [ ] Security hardening
 
 ## Support
 

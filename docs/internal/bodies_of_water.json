@@ -1,0 +1,597 @@
+{
+  "result": [
+    {
+      "id": 111,
+      "name": "Bald Lake"
+    },
+    {
+      "id": 65,
+      "name": "Balsam Lake"
+    },
+    {
+      "id": 95,
+      "name": "Baptiste Lake"
+    },
+    {
+      "id": 166,
+      "name": "Bass Lake (Manitoulin)"
+    },
+    {
+      "id": 132,
+      "name": "Bear Lake"
+    },
+    {
+      "id": 169,
+      "name": "Beech Lake (Haliburton)"
+    },
+    {
+      "id": 117,
+      "name": "Big Cedar Lake"
+    },
+    {
+      "id": 175,
+      "name": "Big Gull Lake"
+    },
+    {
+      "id": 160,
+      "name": "Blackstone Lake"
+    },
+    {
+      "id": 49,
+      "name": "Buckhorn Lake (Lower)"
+    },
+    {
+      "id": 35,
+      "name": "Buckhorn Lake (Upper)"
+    },
+    {
+      "id": 154,
+      "name": "Burnt River"
+    },
+    {
+      "id": 50,
+      "name": "Cameron Lake"
+    },
+    {
+      "id": 37,
+      "name": "Canal Lake"
+    },
+    {
+      "id": 155,
+      "name": "Canning Lake"
+    },
+    {
+      "id": 164,
+      "name": "Cedar Lake"
+    },
+    {
+      "id": 90,
+      "name": "Centennial Lake"
+    },
+    {
+      "id": 91,
+      "name": "Chemong Lake"
+    },
+    {
+      "id": 107,
+      "name": "Clear Lake (Kawarthas)"
+    },
+    {
+      "id": 93,
+      "name": "Clear Lake (Restoule)"
+    },
+    {
+      "id": 124,
+      "name": "Collins Lake"
+    },
+    {
+      "id": 138,
+      "name": "Coon Lake"
+    },
+    {
+      "id": 145,
+      "name": "Cranberry Lake"
+    },
+    {
+      "id": 157,
+      "name": "Crane Lake"
+    },
+    {
+      "id": 151,
+      "name": "Cross Lake"
+    },
+    {
+      "id": 128,
+      "name": "Crowe Lake"
+    },
+    {
+      "id": 31,
+      "name": "Detroit River"
+    },
+    {
+      "id": 136,
+      "name": "Dodd Lake"
+    },
+    {
+      "id": 80,
+      "name": "Dows Lake"
+    },
+    {
+      "id": 143,
+      "name": "Eagle Lake"
+    },
+    {
+      "id": 84,
+      "name": "Elephant Lake"
+    },
+    {
+      "id": 89,
+      "name": "Fishog Lake"
+    },
+    {
+      "id": 133,
+      "name": "Fleuve Saint-Laurent (Mtl-Sorel)"
+    },
+    {
+      "id": 29,
+      "name": "French River (Wolseley Bay)"
+    },
+    {
+      "id": 46,
+      "name": "French River - Lower"
+    },
+    {
+      "id": 33,
+      "name": "French River - Upper"
+    },
+    {
+      "id": 25,
+      "name": "Georgian Bay"
+    },
+    {
+      "id": 28,
+      "name": "Georgian Bay (Bay of Islands)"
+    },
+    {
+      "id": 79,
+      "name": "Georgian Bay (Byng Inlet)"
+    },
+    {
+      "id": 119,
+      "name": "Georgian Bay (French River Delta)"
+    },
+    {
+      "id": 81,
+      "name": "Georgian Bay (Go Home)"
+    },
+    {
+      "id": 40,
+      "name": "Georgian Bay (Honey Harbour)"
+    },
+    {
+      "id": 68,
+      "name": "Georgian Bay (MacGregor Bay)"
+    },
+    {
+      "id": 83,
+      "name": "Georgian Bay (Magnetewan/Britt)"
+    },
+    {
+      "id": 67,
+      "name": "Georgian Bay (Moon River)"
+    },
+    {
+      "id": 122,
+      "name": "Georgian Bay (North Channel)"
+    },
+    {
+      "id": 82,
+      "name": "Georgian Bay (Parry Sound)"
+    },
+    {
+      "id": 69,
+      "name": "Georgian Bay (Pointe Au Baril)"
+    },
+    {
+      "id": 32,
+      "name": "Georgian Bay (Severn Sound)"
+    },
+    {
+      "id": 48,
+      "name": "Gloucester Pool"
+    },
+    {
+      "id": 109,
+      "name": "Head Lake (Kawarthas)"
+    },
+    {
+      "id": 86,
+      "name": "Jack Lake"
+    },
+    {
+      "id": 75,
+      "name": "Jock River"
+    },
+    {
+      "id": 52,
+      "name": "Kashagawigamog Lake"
+    },
+    {
+      "id": 101,
+      "name": "Kasshabog Lake"
+    },
+    {
+      "id": 85,
+      "name": "Katchewanooka Lake"
+    },
+    {
+      "id": 137,
+      "name": "Lac Brown"
+    },
+    {
+      "id": 97,
+      "name": "Lac Donaldson"
+    },
+    {
+      "id": 87,
+      "name": "Lac Gilmour"
+    },
+    {
+      "id": 92,
+      "name": "Lac Saint-Louis"
+    },
+    {
+      "id": 141,
+      "name": "Lac Saint-Pierre"
+    },
+    {
+      "id": 103,
+      "name": "Lac Seul"
+    },
+    {
+      "id": 118,
+      "name": "Lac Simon"
+    },
+    {
+      "id": 34,
+      "name": "Lac des Deux Montagnes"
+    },
+    {
+      "id": 142,
+      "name": "Lac des Ecorces"
+    },
+    {
+      "id": 113,
+      "name": "Lac des Iles"
+    },
+    {
+      "id": 88,
+      "name": "Lac du Cerf"
+    },
+    {
+      "id": 126,
+      "name": "Lake Couchiching"
+    },
+    {
+      "id": 173,
+      "name": "Lake Dalrymple"
+    },
+    {
+      "id": 105,
+      "name": "Lake Erie"
+    },
+    {
+      "id": 156,
+      "name": "Lake Gibson"
+    },
+    {
+      "id": 172,
+      "name": "Lake Huron"
+    },
+    {
+      "id": 159,
+      "name": "Lake Joseph"
+    },
+    {
+      "id": 178,
+      "name": "Lake Lauzon"
+    },
+    {
+      "id": 26,
+      "name": "Lake Nipissing"
+    },
+    {
+      "id": 27,
+      "name": "Lake Nipissing (West Arm)"
+    },
+    {
+      "id": 134,
+      "name": "Lake Nosbonsing"
+    },
+    {
+      "id": 152,
+      "name": "Lake Ontario"
+    },
+    {
+      "id": 41,
+      "name": "Lake Ontario (Toronto Harbour)"
+    },
+    {
+      "id": 158,
+      "name": "Lake Rosseau"
+    },
+    {
+      "id": 66,
+      "name": "Lake Scugog"
+    },
+    {
+      "id": 38,
+      "name": "Lake Simcoe"
+    },
+    {
+      "id": 39,
+      "name": "Lake St. Clair"
+    },
+    {
+      "id": 168,
+      "name": "Lake St. Francis / Lac Saint-Francois"
+    },
+    {
+      "id": 162,
+      "name": "Lake Superior - FMZ10"
+    },
+    {
+      "id": 131,
+      "name": "Lake of the Woods"
+    },
+    {
+      "id": 45,
+      "name": "Lang Lake"
+    },
+    {
+      "id": 139,
+      "name": "Lennon Lake"
+    },
+    {
+      "id": 106,
+      "name": "Little Bald Lake"
+    },
+    {
+      "id": 115,
+      "name": "Little Lake (Peterborough)"
+    },
+    {
+      "id": 144,
+      "name": "Little Lake (Port Severn)"
+    },
+    {
+      "id": 108,
+      "name": "Loch Garry"
+    },
+    {
+      "id": 110,
+      "name": "Lovesick Lake"
+    },
+    {
+      "id": 104,
+      "name": "Madawaska Headpond"
+    },
+    {
+      "id": 47,
+      "name": "Madawaska River"
+    },
+    {
+      "id": 42,
+      "name": "Magnetawan River"
+    },
+    {
+      "id": 123,
+      "name": "Maple Lake"
+    },
+    {
+      "id": 167,
+      "name": "Mattawa River"
+    },
+    {
+      "id": 120,
+      "name": "Mill Lake"
+    },
+    {
+      "id": 127,
+      "name": "Mink Lake"
+    },
+    {
+      "id": 74,
+      "name": "Moira Lake"
+    },
+    {
+      "id": 146,
+      "name": "Moira River"
+    },
+    {
+      "id": 102,
+      "name": "Mountain Lake"
+    },
+    {
+      "id": 76,
+      "name": "Muskosung Lake"
+    },
+    {
+      "id": 96,
+      "name": "Nepawassi Lake"
+    },
+    {
+      "id": 174,
+      "name": "Nepewassi River"
+    },
+    {
+      "id": 99,
+      "name": "Niagara River - Lower (Below Falls)"
+    },
+    {
+      "id": 73,
+      "name": "Niagara River - Upper (Above Falls)"
+    },
+    {
+      "id": 98,
+      "name": "Otonabee River"
+    },
+    {
+      "id": 70,
+      "name": "Ottawa River (Lower) / Rivière des Outaouais (Gatineau - Carillion)"
+    },
+    {
+      "id": 71,
+      "name": "Ottawa River - Upper (Upstream of the Parliament Buildings)"
+    },
+    {
+      "id": 130,
+      "name": "Percy Reach"
+    },
+    {
+      "id": 54,
+      "name": "Petawawa River"
+    },
+    {
+      "id": 23,
+      "name": "Pickerel River (east of 69)"
+    },
+    {
+      "id": 56,
+      "name": "Pickerel River (west of 69)"
+    },
+    {
+      "id": 36,
+      "name": "Pigeon Lake"
+    },
+    {
+      "id": 161,
+      "name": "Pigeon River"
+    },
+    {
+      "id": 177,
+      "name": "Pine Lake"
+    },
+    {
+      "id": 179,
+      "name": "Playa Pesquero, Holguin, Cuba"
+    },
+    {
+      "id": 121,
+      "name": "Restoule Lake"
+    },
+    {
+      "id": 140,
+      "name": "Rice Lake"
+    },
+    {
+      "id": 51,
+      "name": "Rideau River"
+    },
+    {
+      "id": 135,
+      "name": "Rivieres des Mille Iles"
+    },
+    {
+      "id": 114,
+      "name": "Rivière Gatineau"
+    },
+    {
+      "id": 77,
+      "name": "Round Lake - FMZ15"
+    },
+    {
+      "id": 112,
+      "name": "Saugeen River"
+    },
+    {
+      "id": 170,
+      "name": "Scugog River"
+    },
+    {
+      "id": 129,
+      "name": "Seymour Lake"
+    },
+    {
+      "id": 176,
+      "name": "Shoal Lake"
+    },
+    {
+      "id": 125,
+      "name": "Sparrow Lake"
+    },
+    {
+      "id": 171,
+      "name": "St. Clair River"
+    },
+    {
+      "id": 150,
+      "name": "St. John River, NB (Zone 1 - Upstream of Beechwood Dam)"
+    },
+    {
+      "id": 149,
+      "name": "St. John River, NB (Zone 2 - Mactaquac Dam to Hartland)"
+    },
+    {
+      "id": 148,
+      "name": "St. John River, NB (Zone 3 - Mactaquac Dam to Bay of Fundy)"
+    },
+    {
+      "id": 78,
+      "name": "St. Lawrence River"
+    },
+    {
+      "id": 100,
+      "name": "Stoco Lake"
+    },
+    {
+      "id": 53,
+      "name": "Stoney Lake"
+    },
+    {
+      "id": 94,
+      "name": "Stormy Lake"
+    },
+    {
+      "id": 43,
+      "name": "Sturgeon Lake"
+    },
+    {
+      "id": 44,
+      "name": "Talbot River"
+    },
+    {
+      "id": 147,
+      "name": "Thames River"
+    },
+    {
+      "id": 153,
+      "name": "Trent River"
+    },
+    {
+      "id": 165,
+      "name": "Trout Lake (North Bay)"
+    },
+    {
+      "id": 72,
+      "name": "Trout Lake (Sudbury)"
+    },
+    {
+      "id": 163,
+      "name": "Welland River"
+    },
+    {
+      "id": 116,
+      "name": "White Lake"
+    },
+    {
+      "id": 22,
+      "name": "Other"
+    }
+  ],
+  "targetUrl": null,
+  "success": true,
+  "error": null,
+  "unAuthorizedRequest": false,
+  "__abp": true
+}

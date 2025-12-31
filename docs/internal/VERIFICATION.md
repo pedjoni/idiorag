@@ -97,7 +97,7 @@ CREATE SCHEMA IF NOT EXISTS idiorag;
 ### 5. Run Setup Verification ✓
 
 ```bash
-python test_setup.py
+python tests/test_setup.py
 ```
 
 **Expected output:**
@@ -368,7 +368,7 @@ If verification fails:
 
 ✅ **Phase 1 is verified when:**
 - All 12 verification steps pass
-- `quickstart.py` completes without errors
+- `examples/quickstart.py` completes without errors
 - You can view API docs at http://localhost:8000/docs
 - `documents` table exists in the public schema (or your configured schema)
 - No ERROR messages in application logs

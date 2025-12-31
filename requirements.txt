@@ -10,10 +10,10 @@ asyncpg==0.29.0
 pgvector==0.2.5
 alembic==1.13.1
 
-# LlamaIndex
-llama-index==0.10.11
-llama-index-vector-stores-postgres==0.1.5
-llama-index-embeddings-huggingface==0.1.5
+# LlamaIndex (modular packages - newer architecture)
+llama-index-core==0.11.20
+llama-index-vector-stores-postgres==0.2.8
+llama-index-embeddings-huggingface==0.3.1
 
 # Authentication
 python-jose[cryptography]==3.3.0

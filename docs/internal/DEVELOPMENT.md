@@ -245,7 +245,7 @@ print(f'Embedding dimension: {len(embeddings)}')
 1. **Make changes** to source code
 2. **Format code**: `black src/`
 3. **Lint**: `ruff check src/`
-4. **Test locally**: `python quickstart.py`
+4. **Test locally**: `python examples/quickstart.py`
 5. **Commit changes**
 6. **Submit PR**
 

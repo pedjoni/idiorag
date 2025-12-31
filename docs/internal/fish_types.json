@@ -1,0 +1,166 @@
+{
+  "result": {
+    "totalCount": 22,
+    "items": [
+      {
+        "fishType": {
+          "name": "Musky",
+          "description": "The muskellunge (Esox masquinongy), often shortened to muskie, musky or lunge is a species of large freshwater predatory fish native to North America. It is the largest member of the pike family, Esocidae. ",
+          "id": 1
+        }
+      },
+      {
+        "fishType": {
+          "name": "Pike",
+          "description": "Pike or northern pike (Esox lucius) is a species of carnivorous fish of the genus Esox (the pikes). They are typical of brackish and fresh waters of the Northern Hemisphere (i.e. holarctic in distribution). They are known simply as a pike in Great Britain, Ireland, and most of Eastern Europe, Canada and the United States.",
+          "id": 2
+        }
+      },
+      {
+        "fishType": {
+          "name": "Perch",
+          "description": "Perch is a common name for fish of the genus Perca, freshwater gamefish belonging to the family Percidae",
+          "id": 3
+        }
+      },
+      {
+        "fishType": {
+          "name": "Crappie",
+          "description": "White crappie and Black crappie are two species of North American freshwater fish of the genus Pomoxis in the family Centrarchidae (sunfishes). Both species of crappies are popular game fish among recreational anglers",
+          "id": 4
+        }
+      },
+      {
+        "fishType": {
+          "name": "Walleye",
+          "description": "The walleye (Sander vitreus, synonym Stizostedion vitreum), also called the yellow pike or yellow pikeperch or yellow pickerel,is a freshwater perciform fish native to most of Canada and to the Northern United States",
+          "id": 5
+        }
+      },
+      {
+        "fishType": {
+          "name": "Bluegill",
+          "description": "The bluegill (Lepomis macrochirus), sometimes referred to as 'bream', 'brim' 'sunny', or 'copper nose' is a species of North American freshwater fish, native to and commonly found in streams, rivers, lakes, ponds and wetlands east of the Rocky Mountains",
+          "id": 6
+        }
+      },
+      {
+        "fishType": {
+          "name": "LakeTrout",
+          "description": "The lake trout (Salvelinus namaycush) is a freshwater char living mainly in lakes in northern North America",
+          "id": 7
+        }
+      },
+      {
+        "fishType": {
+          "name": "RainbowTrout",
+          "description": "The rainbow trout (Oncorhynchus mykiss) is a species of trout native to cold-water tributaries of the Pacific Ocean in Asia and North America",
+          "id": 8
+        }
+      },
+      {
+        "fishType": {
+          "name": "Steelhead",
+          "description": "Steelhead, or occasionally steelhead trout, is the common name of the anadromous form of the coastal rainbow trout (Oncorhynchus mykiss irideus) or Columbia River redband trout (O. m. gairdneri, also called redband steelhead).",
+          "id": 9
+        }
+      },
+      {
+        "fishType": {
+          "name": "BrookTrout",
+          "description": "The brook trout (Salvelinus fontinalis) is a species of freshwater fish in the char genus Salvelinus of the salmon family Salmonidae. It is native to Eastern North America in the United States and Canada, but has been introduced elsewhere in North America, as well as to Iceland, Europe, and Asia",
+          "id": 10
+        }
+      },
+      {
+        "fishType": {
+          "name": "Salmon",
+          "description": "Salmon is the common name for several commercially important species of euryhaline ray-finned fish from the family Salmonidae, which are native to tributaries of the North Atlantic (genus Salmo) and North Pacific (genus Oncorhynchus) basin",
+          "id": 11
+        }
+      },
+      {
+        "fishType": {
+          "name": "Carp",
+          "description": "Carp are various species of oily freshwater fish from the family Cyprinidae, a very large group of fish native to Europe and Asia",
+          "id": 12
+        }
+      },
+      {
+        "fishType": {
+          "name": "Sucker",
+          "description": "The Catostomidae are the suckers of the order Cypriniformes, with about 78 species in this family of freshwater fishes. The Catostomidae are almost exclusively native to North America.",
+          "id": 13
+        }
+      },
+      {
+        "fishType": {
+          "name": "Whitefish",
+          "description": "The freshwater whitefish are fishes of the subfamily Coregoninae, which contains whitefishes (both freshwater and anadromous) and ciscoes, and is one of three subfamilies in the salmon family Salmonidae.",
+          "id": 14
+        }
+      },
+      {
+        "fishType": {
+          "name": "Cisco",
+          "description": "The ciscoes (or ciscos) are salmonid fish that differ from other members of the genus in having upper and lower jaws of approximately equal length and high gill raker counts.",
+          "id": 15
+        }
+      },
+      {
+        "fishType": {
+          "name": "Other",
+          "description": "Fish species that doesn't fit into any of the available species",
+          "id": 16
+        }
+      },
+      {
+        "fishType": {
+          "name": "Largemouth Bass",
+          "description": null,
+          "id": 17
+        }
+      },
+      {
+        "fishType": {
+          "name": "Smallmouth Bass",
+          "description": null,
+          "id": 18
+        }
+      },
+      {
+        "fishType": {
+          "name": "Wahoo",
+          "description": "A wahoo (Acanthocybium solandri) is a fast, oceanic fish known as a prized game fish and delicious food, related to mackerel, found globally in warm waters, famous for its incredible speed (up to 60 mph) and lean, white, mild-flavored flesh, also called ono in Hawaii",
+          "id": 19
+        }
+      },
+      {
+        "fishType": {
+          "name": "Mahi-mahi",
+          "description": "Mahi-mahi (Dolphinfish) is a vibrant, fast-swimming tropical fish known for its dazzling green/blue and gold colors that fade after death; it has firm, lean, pink flesh that turns white when cooked, a mild-sweet taste, and a square-headed male (bull) versus rounded-head female (cow) distinction, making it a prized, fast-growing, sustainable seafood choice for grilling or pan-frying",
+          "id": 20
+        }
+      },
+      {
+        "fishType": {
+          "name": "Marlin",
+          "description": "A marlin is a large, fast, predatory saltwater fish known for its long, spear-like bill, elongated body, and high dorsal fin, belonging to the family Istiophoridae; they are found in warm ocean waters globally and are prized by sport fishermen for their power and speed, often considered top ocean predators that hunt by stunning prey with their bills",
+          "id": 21
+        }
+      },
+      {
+        "fishType": {
+          "name": "Barracuda",
+          "description": "Barracudas are sleek, torpedo-shaped predatory fish known for their powerful jaws, large mouths, and long, dagger-like teeth, giving them a fearsome look similar to pike. Their bodies are streamlined for speed, typically silvery with blue-gray backs, and they possess two widely separated dorsal fins, a prominent lateral line, and a forked tail with white tips. These fish are fast, efficient hunters in tropical and warm waters, playing vital roles as top predators in marine ecosystems",
+          "id": 22
+        }
+      }
+    ]
+  },
+  "targetUrl": null,
+  "success": true,
+  "error": null,
+  "unAuthorizedRequest": false,
+  "__abp": true
+}

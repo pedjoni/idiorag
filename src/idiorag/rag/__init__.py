@@ -2,10 +2,8 @@
 
 from typing import List, Optional
 
-from llama_index.core import Document as LlamaDocument
 from llama_index.core import Settings, VectorStoreIndex
-from llama_index.core.node_parser import SentenceSplitter
-from llama_index.core.schema import BaseNode, TextNode
+from llama_index.core.schema import BaseNode
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core.llms import CustomLLM, CompletionResponse, LLMMetadata
 from llama_index.vector_stores.postgres import PGVectorStore
@@ -202,42 +200,36 @@ def create_text_nodes(
     document_id: str,
     user_id: str,
     metadata: Optional[dict] = None,
+    chunker_name: str = "default",
 ) -> List[BaseNode]:
     """Create text nodes from content with user isolation.
+    
+    Uses the pluggable chunking system to support custom chunking strategies.
     
     Args:
         content: Document content to chunk
         document_id: Document identifier
         user_id: User identifier for isolation
         metadata: Additional metadata
+        chunker_name: Name of chunker to use (default: "default")
     
     Returns:
         List[BaseNode]: List of text nodes
     """
-    settings = get_settings()
+    from .chunkers import get_chunker
     
-    # Create node parser
-    parser = SentenceSplitter(
-        chunk_size=settings.chunk_size,
-        chunk_overlap=settings.chunk_overlap,
+    # Get appropriate chunker
+    chunker = get_chunker(chunker_name)
+    
+    # Create nodes using the chunker
+    nodes = chunker.chunk_document(
+        content=content,
+        document_id=document_id,
+        user_id=user_id,
+        metadata=metadata,
     )
     
-    # Create LlamaIndex document
-    doc_metadata = {
-        "document_id": document_id,
-        "user_id": user_id,
-        **(metadata or {}),
-    }
-    
-    llama_doc = LlamaDocument(
-        text=content,
-        metadata=doc_metadata,
-    )
-    
-    # Parse into nodes
-    nodes = parser.get_nodes_from_documents([llama_doc])
-    
-    logger.info(f"Created {len(nodes)} nodes for document {document_id}")
+    logger.info(f"Created {len(nodes)} nodes for document {document_id} using '{chunker_name}' chunker")
     return nodes
 
 
@@ -246,6 +238,7 @@ async def index_document(
     content: str,
     user_id: str,
     metadata: Optional[dict] = None,
+    chunker_name: str = "default",
 ) -> None:
     """Index a document for RAG with user isolation.
     
@@ -254,15 +247,16 @@ async def index_document(
         content: Document content
         user_id: User identifier
         metadata: Additional metadata
+        chunker_name: Name of chunker to use (default: "default")
     """
     try:
-        logger.info(f"Indexing document {document_id} for user {user_id}")
+        logger.info(f"Indexing document {document_id} for user {user_id} using '{chunker_name}' chunker")
         
         # Initialize embedding model
         get_embedding_model()
         
-        # Create nodes with user isolation
-        nodes = create_text_nodes(content, document_id, user_id, metadata)
+        # Create nodes with user isolation using specified chunker
+        nodes = create_text_nodes(content, document_id, user_id, metadata, chunker_name)
         
         # Get vector store
         vector_store = get_vector_store(user_id)

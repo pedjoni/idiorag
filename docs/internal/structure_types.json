@@ -1,0 +1,164 @@
+{
+  "result": [
+    {
+      "id": 1,
+      "displayName": "BaitBall",
+      "description": "A bait ball, or baitball, occurs when small fish swarm in a tightly packed spherical formation about a common centre."
+    },
+    {
+      "id": 2,
+      "displayName": "BottomBreak",
+      "description": "Object found on the lake bottom."
+    },
+    {
+      "id": 3,
+      "displayName": "Breakline",
+      "description": "An imaginary line on the lake bottom created from a sudden increase or decrease in depth; An abrupt contrast in the underwater conditions(i.e.: weedline, thermocline, shadeline, water color change, etc.)."
+    },
+    {
+      "id": 4,
+      "displayName": "Channel",
+      "description": "The submerged riverbed; A type of structure used by fish during migration."
+    },
+    {
+      "id": 5,
+      "displayName": "Current",
+      "description": "A stream of water moving continuously in a certain direction."
+    },
+    {
+      "id": 6,
+      "displayName": "DeepWater",
+      "description": "30 ft. deep or deeper; the deepest water in the immediate area, usually the channel."
+    },
+    {
+      "id": 7,
+      "displayName": "DropOff",
+      "description": "A breakline or structure where there is a sudden drop into the deepest water."
+    },
+    {
+      "id": 8,
+      "displayName": "FeederCreek",
+      "description": "A submerged gulch, creek, or wash that feeds into the main channel; Structure that fish use during their migration from deep water to shallow water."
+    },
+    {
+      "id": 9,
+      "displayName": "Flat",
+      "description": "An area of shallow water with a relatively even bottom"
+    },
+    {
+      "id": 10,
+      "displayName": "FoamLine",
+      "description": "An accumulations of foam, with trapped insects, exuvia, etc. found on the surface of freshwater water courses or bodies."
+    },
+    {
+      "id": 11,
+      "displayName": "Hump",
+      "description": "An underwater island; A structure in which the lake bottom rises up from the surrounding area."
+    },
+    {
+      "id": 12,
+      "displayName": "PointBar",
+      "description": "in a lake: A type of underwater structure in which the shallow water protrudes out into the lake more than the surrounding area; In a river: depositional feature made of alluvium that accumulates on the inside bend of streams and rivers below the slip-off slope"
+    },
+    {
+      "id": 13,
+      "displayName": "Ridge",
+      "description": "A type of structure where a long narrow hump exists along the sides of a channel or feeder creek; A levee."
+    },
+    {
+      "id": 14,
+      "displayName": "RipRap",
+      "description": "Large rocks placed by man along the sides of dams and roadways to prevent erosion"
+    },
+    {
+      "id": 15,
+      "displayName": "RockReef",
+      "description": "A type of structure in which the bottom is covered by rock and rubble; A potential food source if found shallow."
+    },
+    {
+      "id": 16,
+      "displayName": "Saddle",
+      "description": "A type of structure which is formed from two inside bends facing opposite directions."
+    },
+    {
+      "id": 17,
+      "displayName": "Shallows",
+      "description": "An area containing shallow water."
+    },
+    {
+      "id": 18,
+      "displayName": "SteepDeep",
+      "description": "An area void of structure, which contains very little shallow water due to steep shoreline, drop off conditions."
+    },
+    {
+      "id": 19,
+      "displayName": "Thermocline",
+      "description": "A horizontal plane of rapidly changing water temperature."
+    },
+    {
+      "id": 22,
+      "displayName": "Other",
+      "description": "Structure type that doesn't fit into any of the available types"
+    },
+    {
+      "id": 21,
+      "displayName": "Weedline",
+      "description": "A line created on the lake bottom where the weed stops growing due to depths too great for the weed to grow."
+    },
+    {
+      "id": 24,
+      "displayName": "RockPile",
+      "description": "rocks or boulders grouped together"
+    },
+    {
+      "id": 23,
+      "displayName": "WeedPockets",
+      "description": "spaces without weeds in weed beds"
+    },
+    {
+      "id": 25,
+      "displayName": "WeedlineUpper",
+      "description": "A line created from the contrast of weed growing to the waters' surface and weed which isn't growing to the surface."
+    },
+    {
+      "id": 26,
+      "displayName": "WeedlineLower",
+      "description": "A line created on the lake bottom where the weed stops growing due to depths too great for the weed to grow."
+    },
+    {
+      "id": 27,
+      "displayName": "Boulder",
+      "description": "single or few boulders"
+    },
+    {
+      "id": 28,
+      "displayName": "Narrows",
+      "description": "A narrow channel connecting two larger areas of water."
+    },
+    {
+      "id": 29,
+      "displayName": "SandBeach",
+      "description": "shorelie with the sand on the bottom, usually with some weeds "
+    },
+    {
+      "id": 30,
+      "displayName": "IsolatedIsland",
+      "description": "Island, usually surounded by deep water"
+    },
+    {
+      "id": 31,
+      "displayName": "IslandTip",
+      "description": "tip of the island, usually extending into a point undewater"
+    },
+    {
+      "id": 32,
+      "displayName": "Rocks",
+      "description": ""
+    }
+  ],
+  "targetUrl": null,
+  "success": true,
+  "error": null,
+  "unAuthorizedRequest": false,
+  "__abp": true
+}

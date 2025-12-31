@@ -1,0 +1,94 @@
+{
+  "result": [
+    {
+      "id": 1,
+      "displayName": "CrankBait",
+      "description": "Also called Plugs or LipBaits. They are usually made of hard plastic or balsa wood, and come with a lip at the front which gives them a wiggling action during retrieval. Based on size and angle of the lip, it can also help these lures to dive deeper into the water."
+    },
+    {
+      "id": 2,
+      "displayName": "Jig",
+      "description": "A type of weighted fishing lure. A jig consists of a heavy metal (typically lead) sinker with an attached fish hook that is usually obscured inside a soft lure or feather-like decorations. Jigs are intended to create a jerky, vertical 'jumping' motion to attract fish"
+    },
+    {
+      "id": 3,
+      "displayName": "NaturalBait",
+      "description": "The natural bait angler, with few exceptions, will use a common prey species of the fish as an attractant. The natural bait used may be alive or dead. Common natural baits include worms, leeches, minnows, frogs, salamanders, and insects"
+    },
+    {
+      "id": 4,
+      "displayName": "SpinnerBait",
+      "description": "Spinnerbaits come with a skirted hook on one side, and one or more metal blades which spin like a propeller, on the other. The spinning of the blades creates vibration and color reflection, which pretty accurately mimics minnows and other bait fish"
+    },
+    {
+      "id": 5,
+      "displayName": "InlineSpinner",
+      "description": "Sometimes called Bucktail.Lure in which the blade(s), skirt and hook(s) are on the same piece of straight wire shaft, all in a line"
+    },
+    {
+      "id": 6,
+      "displayName": "Bucktail",
+      "description": "Sometimes called InlineSpinner.Lure in which the blade(s), skirt and hook(s) are on the same piece of straight wire shaft, all in a line"
+    },
+    {
+      "id": 7,
+      "displayName": "BladeBait",
+      "description": "A blade bait consists of a flat metal spoon with a weighted nose and two sets of trebble hooks, one one each side. The blade bait will vibrate on the retrieve and vibrate on the lift."
+    },
+    {
+      "id": 8,
+      "displayName": "Spoon",
+      "description": "Spoons are curved, concave metal lures. Their concave shape makes them shine and wobble as they move through the water."
+    },
+    {
+      "id": 9,
+      "displayName": "SoftPlastic",
+      "description": "Soft plastic lures are flexible rubbery baits that imitate a variety of aquatic critters. These can be anything from minnows, worms, and crawfish to lizards and frogs."
+    },
+    {
+      "id": 10,
+      "displayName": "Swimbait",
+      "description": "Swimbaits come with a body designed to give these lures a characteristic action when pulled through the water, with the most common ones being paddle tail swimbaits that wiggle their tail during retrieval"
+    },
+    {
+      "id": 11,
+      "displayName": "ChatterBait",
+      "description": "Consist of the body of a skirted jig combined with a metal plate at the front."
+    },
+    {
+      "id": 12,
+      "displayName": "Fly",
+      "description": "Fly fishing lures consist of just a single hook and a skirt. Using furs, feathers, or thread, these lures are tied to resemble insects, crustaceans, or other prey."
+    },
+    {
+      "id": 13,
+      "displayName": "Topwater",
+      "description": "A lot of different baits in various shapes to achieve different actions on the water’s surface."
+    },
+    {
+      "id": 14,
+      "displayName": "JerkBait",
+      "description": "A jerkbait is a longish lure made to represent an injured baitfish, and has no real action of its own. In jerkbait fishing the action is created by the angler. This is done by jerking your rod as you reel the lure in. Every time you jerk the rod, the bait will shoot off in different directions."
+    },
+    {
+      "id": 15,
+      "displayName": "GlideBait",
+      "description": "it’s a hard baitfish imitation made of wood, plastic or resin, mostly with a single joint that’s usually located just aft of the midpoint."
+    },
+    {
+      "id": 16,
+      "displayName": "BigRubberBait",
+      "description": "Lures like Bull Dawgs and Medussas, which can range in weight from 5oz to over a pound"
+    },
+    {
+      "id": 17,
+      "displayName": "Other",
+      "description": "Lure type that doesn't fit into any of the available types"
+    }
+  ],
+  "targetUrl": null,
+  "success": true,
+  "error": null,
+  "unAuthorizedRequest": false,
+  "__abp": true
+}

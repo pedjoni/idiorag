@@ -33,8 +33,9 @@ class DocumentCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=500, description="Document title")
     content: str = Field(..., min_length=1, description="Document content")
     metadata: Dict[str, Any] | None = Field(default=None, description="Additional metadata")
-    doc_type: str | None = Field(default=None, max_length=100, description="Document type")
+    doc_type: str | None = Field(default=None, max_length=100, description="Document type (can auto-select chunker)")
     source: str | None = Field(default=None, max_length=500, description="Document source")
+    chunker: str | None = Field(default=None, max_length=50, description="Chunking strategy to use (default: auto-detect from doc_type)")
 
 
 class DocumentResponse(BaseModel):
@@ -106,13 +107,27 @@ async def create_document(
     # Index document in vector store
     try:
         from ...rag import index_document
+        from ...rag.chunkers import get_chunker_registry
+        from ...config import get_settings
+        
+        # Determine which chunker to use
+        chunker_name = document.chunker or "default"
+        
+        # If no explicit chunker but doc_type is provided, check config mapping
+        if not document.chunker and document.doc_type:
+            settings = get_settings()
+            # TODO: Add DOC_TYPE_CHUNKER_MAPPING to config in future PR
+            # For now, use default for all types
+            pass
+        
         await index_document(
             document_id=doc_id,
             content=document.content,
             user_id=user.user_id,
-            metadata=document.metadata
+            metadata=document.metadata,
+            chunker_name=chunker_name
         )
-        logger.info(f"Document indexed successfully: {doc_id}")
+        logger.info(f"Document indexed successfully using '{chunker_name}' chunker: {doc_id}")
     except Exception as e:
         logger.error(f"Error indexing document {doc_id}: {e}")
         # Don't fail the request if indexing fails - document is still in DB

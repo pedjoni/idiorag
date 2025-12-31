@@ -35,6 +35,14 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info("Initializing database connections...")
     await init_db()
     
+    # Register custom chunkers
+    logger.info("Registering custom chunkers...")
+    from .rag.chunkers import register_chunker
+    from examples.fishing.fishing_chunker import FishingLogChunker
+    
+    register_chunker("fishing_log", FishingLogChunker(mode="hybrid", include_weather=True))
+    logger.info("Registered fishing_log chunker")
+    
     # TODO: Initialize LlamaIndex
     # TODO: Load embedding model
     
