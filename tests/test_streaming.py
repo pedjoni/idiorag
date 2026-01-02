@@ -49,6 +49,7 @@ async def test_streaming():
             5. Texas-rigged senkos are highly effective year-round
             """,
             "doc_type": "fishing_tips",
+            "source": "test_bass_tips_v1",  # Add source for deduplication
             "metadata": {
                 "category": "tips",
                 "species": ["largemouth_bass", "smallmouth_bass"]
@@ -57,7 +58,7 @@ async def test_streaming():
         
         try:
             response = await client.post(
-                f"{base_url}/api/v1/documents/",
+                f"{base_url}/api/v1/documents",
                 json=doc_data,
                 headers=headers,
                 timeout=30.0

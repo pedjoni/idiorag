@@ -138,8 +138,11 @@ from examples.fishing.fishing_chunker import FishingLogChunker
 # Register during startup
 @app.on_event("startup")
 async def startup_event():
-    # Register chunker
-    register_chunker("fishing_log", FishingLogChunker(mode="hybrid"))
+    # Register chunker (uses default: mode="hybrid", include_weather=True)
+    register_chunker("fishing_log", FishingLogChunker)
+    
+    # Or with custom parameters:
+    # register_chunker("fishing_log", lambda: FishingLogChunker(mode="hybrid", include_weather=True))
 ```
 
 ### Step 3: Index Logs from Your App

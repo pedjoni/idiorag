@@ -136,8 +136,11 @@ Context: {parent_data.get('context', 'N/A')}
 from idiorag.rag.chunkers import register_chunker
 from my_app.chunkers.custom_chunker import MyCustomChunker
 
-# Register at application startup
+# Register at application startup (uses class with default parameters)
 register_chunker("my_custom", MyCustomChunker)
+
+# Or with custom parameters using lambda:
+# register_chunker("my_custom", lambda: MyCustomChunker(param1="value", param2=True))
 ```
 
 #### Option B: Using Entry Points (Advanced)
@@ -159,11 +162,12 @@ entry_points={
 import requests
 
 response = requests.post(
-    "http://localhost:8000/api/v1/documents/",
+    "http://localhost:8000/api/v1/documents",
     headers={"Authorization": f"Bearer {token}"},
     json={
         "title": "My Document",
         "content": json.dumps(my_structured_data),
+        "source": "my_doc_123",  # Unique identifier for deduplication
         "doc_type": "custom_type",
         "chunker": "my_custom"  # Explicitly specify chunker
     }

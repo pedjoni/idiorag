@@ -36,7 +36,8 @@ class ChunkerRegistry:
     
     def __init__(self):
         """Initialize registry with default chunker."""
-        self._chunkers: Dict[str, Type[DocumentChunker]] = {
+        from typing import Callable, Union
+        self._chunkers: Dict[str, Union[Type[DocumentChunker], Callable[[], DocumentChunker]]] = {
             "default": DefaultChunker,
         }
     
@@ -45,16 +46,30 @@ class ChunkerRegistry:
         
         Args:
             name: Name to register the chunker under (e.g., "fishing_log")
-            chunker_class: The chunker class (must extend DocumentChunker)
+            chunker_class: The chunker class or factory function that returns a DocumentChunker instance
             
         Raises:
             TypeError: If chunker_class doesn't extend DocumentChunker
         """
-        if not issubclass(chunker_class, DocumentChunker):
-            raise TypeError(f"{chunker_class} must extend DocumentChunker")
+        from typing import Callable
         
-        self._chunkers[name] = chunker_class
-        logger.info(f"Registered chunker: {name} -> {chunker_class.__name__}")
+        # Check if it's a class or callable
+        if isinstance(chunker_class, type) and issubclass(chunker_class, DocumentChunker):
+            # It's a class
+            self._chunkers[name] = chunker_class
+            logger.info(f"Registered chunker: {name} -> {chunker_class.__name__}")
+        elif callable(chunker_class):
+            # It's a factory function - validate by calling it
+            try:
+                instance = chunker_class()
+                if not isinstance(instance, DocumentChunker):
+                    raise TypeError(f"Factory function must return a DocumentChunker instance, got {type(instance)}")
+                self._chunkers[name] = chunker_class
+                logger.info(f"Registered chunker factory: {name}")
+            except Exception as e:
+                raise TypeError(f"Failed to validate factory function: {e}")
+        else:
+            raise TypeError(f"{chunker_class} must be a DocumentChunker class or a factory function")
     
     def register_from_path(self, name: str, class_path: str) -> None:
         """Register a chunker from a module path string.

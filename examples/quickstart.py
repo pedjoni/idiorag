@@ -67,6 +67,7 @@ async def test_api():
             Water temp: 68°F, slight chop on surface.
             """,
             "doc_type": "fishing_log",
+            "source": "test_log_20250115",  # Add source for deduplication
             "metadata": {
                 "location": "Lake Michigan",
                 "date": "2025-01-15",
@@ -78,7 +79,7 @@ async def test_api():
         
         try:
             response = await client.post(
-                f"{base_url}/api/v1/documents/",
+                f"{base_url}/api/v1/documents",
                 json=doc_data,
                 headers=headers,
                 timeout=30.0  # Add explicit timeout
@@ -102,7 +103,7 @@ async def test_api():
         print("\n4. Listing documents...")
         try:
             response = await client.get(
-                f"{base_url}/api/v1/documents/",
+                f"{base_url}/api/v1/documents",
                 headers=headers
             )
             if response.status_code == 200:

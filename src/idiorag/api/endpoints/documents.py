@@ -1,10 +1,11 @@
 """Document ingestion endpoints."""
 
+import hashlib
 import json
 import uuid
 from typing import Any, Dict, List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -50,6 +51,7 @@ class DocumentResponse(BaseModel):
     source: str | None
     created_at: str
     updated_at: str
+    action: str | None = Field(default=None, description="Action taken: 'created', 'updated', or 'unchanged'")
 
 
 class DocumentListResponse(BaseModel):
@@ -60,20 +62,25 @@ class DocumentListResponse(BaseModel):
 
 
 @router.post(
-    "/",
+    "",
     response_model=DocumentResponse,
-    status_code=status.HTTP_201_CREATED,
-    summary="Create a new document"
+    summary="Create or update a document"
 )
 async def create_document(
     document: DocumentCreate,
     user: CurrentUser,
     db: AsyncSession = Depends(get_db)
 ) -> DocumentResponse:
-    """Create a new document and index it for RAG.
+    """Create or update a document with automatic deduplication.
+    
+    If a document with the same 'source' field exists for this user:
+    - If content is identical → Return existing document (200, action='unchanged')
+    - If content is different → Update and re-index (200, action='updated')
+    
+    If no existing document with this source → Create new (201, action='created')
     
     The document will be:
-    1. Stored in the database
+    1. Stored in the database (or updated)
     2. Chunked according to configured strategy
     3. Embedded using the configured model
     4. Stored in the vector database with user_id isolation
@@ -84,11 +91,98 @@ async def create_document(
         db: Database session
     
     Returns:
-        DocumentResponse: Created document
+        DocumentResponse: Created or updated document with action indicator
     """
-    logger.info(f"Creating document for user {user.user_id}: {document.title}")
+    logger.info(f"Processing document for user {user.user_id}: {document.title}")
     
-    # Create document record
+    # Check if document with this source already exists for this user
+    existing_doc = None
+    if document.source:
+        result = await db.execute(
+            select(Document).where(
+                Document.user_id == user.user_id,
+                Document.source == document.source
+            )
+        )
+        existing_doc = result.scalar_one_or_none()
+    
+    # Calculate content hash for comparison
+    content_hash = hashlib.sha256(document.content.encode('utf-8')).hexdigest()
+    
+    if existing_doc:
+        # Document exists - check if content changed
+        existing_hash = hashlib.sha256(existing_doc.content.encode('utf-8')).hexdigest()
+        
+        if existing_hash == content_hash:
+            # Content is identical - return existing document
+            logger.info(f"Document unchanged (source={document.source}): {existing_doc.id}")
+            return DocumentResponse(
+                id=existing_doc.id,
+                user_id=existing_doc.user_id,
+                title=existing_doc.title,
+                content=existing_doc.content,
+                metadata=_deserialize_metadata(existing_doc.metadata_),
+                doc_type=existing_doc.doc_type,
+                source=existing_doc.source,
+                created_at=existing_doc.created_at.isoformat(),
+                updated_at=existing_doc.updated_at.isoformat(),
+                action="unchanged"
+            )
+        else:
+            # Content changed - update and re-index
+            logger.info(f"Updating document (source={document.source}): {existing_doc.id}")
+            
+            # Update document fields
+            existing_doc.title = document.title
+            existing_doc.content = document.content
+            existing_doc.metadata_ = json.dumps(document.metadata) if document.metadata else None
+            existing_doc.doc_type = document.doc_type
+            
+            await db.commit()
+            await db.refresh(existing_doc)
+            
+            # Delete old vectors and re-index
+            try:
+                from ...rag import delete_document_from_index, index_document
+                
+                # Delete old vectors
+                await delete_document_from_index(existing_doc.id, user.user_id)
+                logger.info(f"Deleted old vectors for document: {existing_doc.id}")
+                
+                # Re-index with new content
+                chunker_name = document.chunker or "default"
+                if not document.chunker and document.doc_type:
+                    # TODO: Add DOC_TYPE_CHUNKER_MAPPING to config
+                    pass
+                
+                await index_document(
+                    document_id=existing_doc.id,
+                    content=document.content,
+                    user_id=user.user_id,
+                    metadata=document.metadata,
+                    chunker_name=chunker_name
+                )
+                logger.info(f"Document re-indexed successfully using '{chunker_name}' chunker: {existing_doc.id}")
+            except Exception as e:
+                logger.error(f"Error re-indexing document {existing_doc.id}: {e}")
+                # Don't fail the request if indexing fails
+            
+            return DocumentResponse(
+                id=existing_doc.id,
+                user_id=existing_doc.user_id,
+                title=existing_doc.title,
+                content=existing_doc.content,
+                metadata=_deserialize_metadata(existing_doc.metadata_),
+                doc_type=existing_doc.doc_type,
+                source=existing_doc.source,
+                created_at=existing_doc.created_at.isoformat(),
+                updated_at=existing_doc.updated_at.isoformat(),
+                action="updated"
+            )
+    
+    # No existing document - create new
+    logger.info(f"Creating new document for user {user.user_id}: {document.title}")
+    
     doc_id = str(uuid.uuid4())
     db_document = Document(
         id=doc_id,
@@ -107,17 +201,10 @@ async def create_document(
     # Index document in vector store
     try:
         from ...rag import index_document
-        from ...rag.chunkers import get_chunker_registry
-        from ...config import get_settings
         
-        # Determine which chunker to use
         chunker_name = document.chunker or "default"
-        
-        # If no explicit chunker but doc_type is provided, check config mapping
         if not document.chunker and document.doc_type:
-            settings = get_settings()
-            # TODO: Add DOC_TYPE_CHUNKER_MAPPING to config in future PR
-            # For now, use default for all types
+            # TODO: Add DOC_TYPE_CHUNKER_MAPPING to config
             pass
         
         await index_document(
@@ -134,7 +221,7 @@ async def create_document(
     
     logger.info(f"Document created successfully: {doc_id}")
     
-    return DocumentResponse(
+    response = DocumentResponse(
         id=db_document.id,
         user_id=db_document.user_id,
         title=db_document.title,
@@ -144,11 +231,19 @@ async def create_document(
         source=db_document.source,
         created_at=db_document.created_at.isoformat(),
         updated_at=db_document.updated_at.isoformat(),
+        action="created"
+    )
+    
+    # Set 201 status code for new documents
+    return Response(
+        content=response.model_dump_json(),
+        status_code=status.HTTP_201_CREATED,
+        media_type="application/json"
     )
 
 
 @router.get(
-    "/",
+    "",
     response_model=DocumentListResponse,
     summary="List user's documents"
 )

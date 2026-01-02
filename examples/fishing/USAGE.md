@@ -12,13 +12,13 @@ In your application startup (e.g., [main.py](../../src/idiorag/main.py)):
 from idiorag.rag.chunkers import register_chunker
 from examples.fishing.fishing_chunker import FishingLogChunker
 
-# Register with default hybrid mode
-register_chunker("fishing_log", FishingLogChunker())
+# Register with default parameters (hybrid mode, include_weather=True)
+register_chunker("fishing_log", FishingLogChunker)
 
-# Or register with custom configuration
+# Or register with custom configuration using lambda
 register_chunker(
     "fishing_log_events_only",
-    FishingLogChunker(mode="event_only", include_weather=False)
+    lambda: FishingLogChunker(mode="event_only", include_weather=False)
 )
 ```
 
@@ -220,7 +220,7 @@ async def sync_fishing_logs():
 ### 1. Start with Hybrid Mode
 
 ```python
-register_chunker("fishing_log", FishingLogChunker(mode="hybrid"))
+register_chunker("fishing_log", lambda: FishingLogChunker(mode="hybrid"))
 ```
 
 ### 2. Index a Few Sample Logs

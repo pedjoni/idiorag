@@ -180,6 +180,7 @@ response = requests.post(
     json={
         "title": "Detroit River - June 15 2024",
         "content": '{"session": {...}, "location": {...}, "events": [...]}',  # Enriched JSON
+        "source": "fishing_log_12345",  # Unique identifier for deduplication
         "chunker": "fishing_log",  # Uses FishingLogChunker
         "metadata": {"session_date": "2024-06-15"}
     }

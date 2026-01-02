@@ -105,7 +105,7 @@ All protected endpoints require JWT Bearer token:
 curl -X POST http://localhost:8000/api/v1/documents \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"title": "Test", "content": "..."}'
+  -d '{"title": "Test", "content": "...", "source": "test_doc_1"}'
 ```
 
 Generate test token:
@@ -198,6 +198,7 @@ curl -X POST http://localhost:8000/api/v1/documents \
   -d '{
     "title": "Fishing Trip",
     "content": "Caught 3 bass...",
+    "source": "fishing_log_123",
     "doc_type": "fishing_log"
   }'
 
