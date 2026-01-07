@@ -120,7 +120,20 @@ async def test_streaming():
                                 print(f"          {chunk['content'][:80]}...")
                             print("\n   💬 Answer: ", end="", flush=True)
                         
+                        elif data["type"] == "answer":
+                            # Final answer content
+                            content = data["content"]
+                            print(content, end="", flush=True)
+                            full_answer += content
+                            tokens_received += 1
+                        
+                        elif data["type"] == "thinking":
+                            # Thinking/reasoning content (only with use_cot)
+                            # For now, just count but don't display
+                            tokens_received += 1
+                        
                         elif data["type"] == "token":
+                            # Fallback for unstructured content
                             content = data["content"]
                             print(content, end="", flush=True)
                             full_answer += content
@@ -188,6 +201,7 @@ async def test_streaming():
         
         try:
             cot_answer = ""
+            cot_thinking = ""
             
             async with client.stream(
                 "POST",
@@ -198,6 +212,9 @@ async def test_streaming():
                 if response.status_code != 200:
                     print(f"❌ CoT request failed: {response.status_code}")
                 else:
+                    thinking_started = False
+                    answer_started = False
+                    
                     async for line in response.aiter_lines():
                         line = line.strip()
                         if not line or not line.startswith("data: "):
@@ -208,16 +225,33 @@ async def test_streaming():
                             
                             if data["type"] == "context":
                                 print(f"\n   📚 Context: {len(data['chunks'])} chunks")
-                                print("   🧠 Reasoning: ", end="", flush=True)
+                            
+                            elif data["type"] == "thinking":
+                                if not thinking_started:
+                                    print("   Thinking: ", end="", flush=True)
+                                    thinking_started = True
+                                content = data["content"]
+                                print(content, end="", flush=True)
+                                cot_thinking += content
+                            
+                            elif data["type"] == "answer":
+                                if not answer_started:
+                                    print("\n   ✅ Answer: ", end="", flush=True)
+                                    answer_started = True
+                                content = data["content"]
+                                print(content, end="", flush=True)
+                                cot_answer += content
                             
                             elif data["type"] == "token":
+                                # Fallback for unstructured content
                                 content = data["content"]
                                 print(content, end="", flush=True)
                                 cot_answer += content
                             
                             elif data["type"] == "done":
                                 print("\n\n   ✅ CoT completed")
-                                print(f"   📊 Answer length: {len(cot_answer)} chars")
+                                print(f"   📊 Thinking: {len(cot_thinking)} chars")
+                                print(f"   📊 Answer: {len(cot_answer)} chars")
                                 break
                         
                         except json.JSONDecodeError:

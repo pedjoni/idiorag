@@ -9,8 +9,8 @@ from .config import get_settings
 
 
 def generate_test_token(
-    user_id: str = "test_user_123",
-    email: str = "test@example.com",
+    user_id: str = "5",
+    email: str = "peja@pjcode.com",
     expires_in_minutes: int = 60,
 ) -> str:
     """Generate a test JWT token for development.
@@ -112,6 +112,14 @@ Weather: {weather}
 
 
 if __name__ == "__main__":
+    import sys
+    from pathlib import Path
+    
+    # Add parent directory to path for direct execution
+    sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+    
+    from idiorag.config import get_settings
+    
     # Generate a test token
     token = generate_test_token()
     print("Test JWT Token:")

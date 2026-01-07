@@ -18,9 +18,9 @@ class QueryRequest(BaseModel):
     """Request model for RAG query."""
     
     query: str = Field(..., min_length=1, max_length=2000, description="User query")
-    max_tokens: int | None = Field(default=256, ge=1, le=4096, description="Maximum tokens in response")
+    max_tokens: int | None = Field(default=256, ge=1, le=32000, description="Maximum tokens in response")
     temperature: float | None = Field(default=0.7, ge=0.0, le=2.0, description="LLM temperature")
-    top_k: int = Field(default=5, ge=1, le=20, description="Number of context chunks to retrieve")
+    top_k: int = Field(default=5, ge=1, le=1000, description="Number of context chunks to retrieve")
     use_cot: bool = Field(default=False, description="Enable chain-of-thought reasoning for complex queries")
 
 

@@ -49,7 +49,7 @@ class OpenAICompatibleLLM(CustomLLM):
         # Stop sequences can be overridden via kwargs or use empty list
         stop_sequences = kwargs.get("stop", [])
         
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=300.0) as client:
             response = await client.post(
                 f"{self.api_base}/completions",
                 headers={"Authorization": f"Bearer {self.api_key}"},
@@ -60,7 +60,6 @@ class OpenAICompatibleLLM(CustomLLM):
                     "max_tokens": kwargs.get("max_tokens", self.max_tokens),
                     "stop": stop_sequences,
                 },
-                timeout=60.0,
             )
             response.raise_for_status()
             result = response.json()
@@ -80,7 +79,7 @@ class OpenAICompatibleLLM(CustomLLM):
         # Stop sequences can be overridden via kwargs or use empty list
         stop_sequences = kwargs.get("stop", [])
         
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=300.0) as client:
             async with client.stream(
                 "POST",
                 f"{self.api_base}/completions",
@@ -93,7 +92,6 @@ class OpenAICompatibleLLM(CustomLLM):
                     "stream": True,
                     "stop": stop_sequences,
                 },
-                timeout=60.0,
             ) as response:
                 response.raise_for_status()
                 async for line in response.aiter_lines():
@@ -464,7 +462,7 @@ async def query_with_context_stream(
         ])
         
         if use_cot:
-            # Chain-of-thought prompt: reason first, then answer
+            # Chain-of-thought with structured output
             prompt = f"""You are a helpful assistant. Answer the user's question based only on the provided context.
 
 Context:
@@ -472,31 +470,113 @@ Context:
 
 Question: {query}
 
-Think step-by-step about the information, then provide your final answer after "Final Answer:".
+You MUST respond using this exact format. Start immediately with the <thinking> tag:
 
-Reasoning:"""
+<thinking>
+[Your step-by-step analysis here]
+</thinking>
+<answer>
+[Your concise final answer here]
+</answer>
+
+Begin your response now with <thinking>:"""
         else:
-            # Direct answer prompt
-            prompt = f"""You are a helpful assistant. Answer the user's question based only on the provided context. Be direct and concise.
+            # Direct answer with structured output
+            prompt = f"""You are a helpful assistant. Answer the user's question based only on the provided context.
 
 Context:
 {context_str}
 
 Question: {query}
 
-Provide a brief, direct answer (2-3 sentences maximum):"""
+Provide your answer inside <answer> tags. Be direct and concise (2-3 sentences).
+
+<answer>"""
         
-        # Stream the response (don't await, it's an async generator)
-        # Use configured stop sequences for direct mode, none for CoT
+        # Stream the response with parsing for structured tags
+        # Add stop sequences to prevent LLM from continuing after closing tags
+        # For CoT, only stop after </answer> (not </thinking>, we need the answer section too!)
         settings = get_settings()
-        stop_sequences = [] if use_cot else settings.llm_stop_sequences
+        stop_sequences = ["</answer>"]
+        
+        # Track parsing state
+        buffer = ""
+        in_thinking = False
+        in_answer = False
         
         async for response in llm.astream_complete(prompt, stop=stop_sequences):
             if response.delta:
-                yield {
-                    "type": "token",
-                    "content": response.delta
-                }
+                buffer += response.delta
+                
+                # Parse and emit events based on tags
+                while buffer:
+                    if not in_thinking and not in_answer:
+                        # Look for opening tags
+                        if "<thinking>" in buffer:
+                            idx = buffer.index("<thinking>")
+                            # Emit any content before tag as token
+                            if idx > 0:
+                                yield {"type": "token", "content": buffer[:idx]}
+                            buffer = buffer[idx + 10:]  # Skip "<thinking>"
+                            in_thinking = True
+                            continue
+                        elif "<answer>" in buffer:
+                            idx = buffer.index("<answer>")
+                            if idx > 0:
+                                yield {"type": "token", "content": buffer[:idx]}
+                            buffer = buffer[idx + 8:]  # Skip "<answer>"
+                            in_answer = True
+                            continue
+                        else:
+                            # No tags found, emit what we have except last few chars (might be partial tag)
+                            if len(buffer) > 10:
+                                emit_len = len(buffer) - 10
+                                yield {"type": "token", "content": buffer[:emit_len]}
+                                buffer = buffer[emit_len:]
+                            break
+                    
+                    elif in_thinking:
+                        # Look for closing tag
+                        if "</thinking>" in buffer:
+                            idx = buffer.index("</thinking>")
+                            if idx > 0:
+                                yield {"type": "thinking", "content": buffer[:idx]}
+                            buffer = buffer[idx + 11:]  # Skip "</thinking>"
+                            in_thinking = False
+                            continue
+                        else:
+                            # Emit thinking content except last few chars
+                            if len(buffer) > 12:
+                                emit_len = len(buffer) - 12
+                                yield {"type": "thinking", "content": buffer[:emit_len]}
+                                buffer = buffer[emit_len:]
+                            break
+                    
+                    elif in_answer:
+                        # Look for closing tag
+                        if "</answer>" in buffer:
+                            idx = buffer.index("</answer>")
+                            if idx > 0:
+                                yield {"type": "answer", "content": buffer[:idx]}
+                            buffer = buffer[idx + 9:]  # Skip "</answer>"
+                            in_answer = False
+                            continue
+                        else:
+                            # Emit answer content except last few chars
+                            if len(buffer) > 10:
+                                emit_len = len(buffer) - 10
+                                yield {"type": "answer", "content": buffer[:emit_len]}
+                                buffer = buffer[emit_len:]
+                            break
+        
+        # Emit any remaining buffer content
+        if buffer:
+            if in_thinking:
+                yield {"type": "thinking", "content": buffer}
+            elif in_answer:
+                yield {"type": "answer", "content": buffer}
+            else:
+                yield {"type": "token", "content": buffer}
         
         # Signal completion
         yield {"type": "done"}
