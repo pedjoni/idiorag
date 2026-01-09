@@ -424,7 +424,14 @@ async def query_with_context(
             if documents_retrieved > 0 else 0.0
         )
         
+        metadata = {
+            "total_documents_in_index": total_docs,
+            "documents_retrieved": documents_retrieved,
+            "avg_relevance_score": round(avg_relevance_score, 3),
+        }
+        
         logger.info(f"Query completed with {len(context_chunks)} context chunks")
+        logger.info(f"Query metadata - Total docs: {total_docs}, Retrieved: {documents_retrieved}, Avg score: {metadata['avg_relevance_score']}")
         logger.info(f"LLM Answer: {str(response)[:200]}...")
         
         return {
@@ -432,11 +439,7 @@ async def query_with_context(
             "answer": str(response),
             "context": context_chunks,
             "tokens_used": None,  # TODO: Track token usage if LLM provides it
-            "metadata": {
-                "total_documents_in_index": total_docs,
-                "documents_retrieved": documents_retrieved,
-                "avg_relevance_score": round(avg_relevance_score, 3),
-            },
+            "metadata": metadata,
         }
         
     except Exception as e:
@@ -517,15 +520,22 @@ async def query_with_context_stream(
             if documents_retrieved > 0 else 0.0
         )
         
-        yield {
+        metadata = {
+            "total_documents_in_index": total_docs,
+            "documents_retrieved": documents_retrieved,
+            "avg_relevance_score": round(avg_relevance_score, 3),
+        }
+        
+        logger.info(f"Streaming query metadata - Total docs: {total_docs}, Retrieved: {documents_retrieved}, Avg score: {metadata['avg_relevance_score']}")
+        
+        context_event = {
             "type": "context",
             "chunks": context_chunks,
-            "metadata": {
-                "total_documents_in_index": total_docs,
-                "documents_retrieved": documents_retrieved,
-                "avg_relevance_score": round(avg_relevance_score, 3),
-            }
+            "metadata": metadata
         }
+        
+        logger.info(f"Yielding context event with {len(context_chunks)} chunks and metadata: {metadata}")
+        yield context_event
         
         # Build prompt with context
         context_str = "\n\n".join([
