@@ -1,7 +1,7 @@
 # Core Framework
 fastapi==0.109.0
 uvicorn[standard]==0.27.0
-pydantic==2.5.3
+pydantic>=2.7.0
 pydantic-settings==2.1.0
 
 # Database
@@ -12,8 +12,8 @@ alembic==1.13.1
 
 # LlamaIndex (modular packages - newer architecture)
 llama-index-core==0.11.20
-llama-index-vector-stores-postgres==0.2.8
-llama-index-embeddings-huggingface==0.3.1
+llama-index-vector-stores-postgres>=0.2.0
+llama-index-embeddings-huggingface>=0.3.0
 
 # Authentication
 python-jose[cryptography]==3.3.0

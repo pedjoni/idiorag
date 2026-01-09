@@ -227,6 +227,12 @@ def create_text_nodes(
         metadata=metadata,
     )
     
+    # CRITICAL: Ensure user_id is always stored as string for consistent PostgreSQL queries
+    # This ensures compatibility regardless of which chunker is used
+    for node in nodes:
+        if "user_id" in node.metadata:
+            node.metadata["user_id"] = str(node.metadata["user_id"])
+    
     logger.info(f"Created {len(nodes)} nodes for document {document_id} using '{chunker_name}' chunker")
     return nodes
 
@@ -352,11 +358,19 @@ async def query_with_context(
                 "Provide a brief, direct answer (2-3 sentences maximum):"
             )
         
-        # Note: User isolation is handled by metadata in nodes during indexing
+        # User isolation: filter by user_id in metadata
+        # Convert user_id to string to ensure consistent comparison in PostgreSQL
+        from llama_index.core.vector_stores import MetadataFilters, MetadataFilter, FilterOperator
+        
+        filters = MetadataFilters(
+            filters=[MetadataFilter(key="user_id", value=str(user_id), operator=FilterOperator.EQ)]
+        )
+        
         query_engine = index.as_query_engine(
             similarity_top_k=top_k,
             llm=llm,
             text_qa_template=qa_prompt_tmpl,
+            filters=filters,
         )
         
         # Override settings if provided
@@ -436,8 +450,16 @@ async def query_with_context_stream(
         # Create index from vector store
         index = VectorStoreIndex.from_vector_store(vector_store)
         
-        # Retrieve context chunks first
-        retriever = index.as_retriever(similarity_top_k=top_k)
+        # User isolation: filter by user_id in metadata
+        # Convert user_id to string to ensure consistent comparison in PostgreSQL
+        from llama_index.core.vector_stores import MetadataFilters, MetadataFilter, FilterOperator
+        
+        filters = MetadataFilters(
+            filters=[MetadataFilter(key="user_id", value=str(user_id), operator=FilterOperator.EQ)]
+        )
+        
+        # Retrieve context chunks first with user filter
+        retriever = index.as_retriever(similarity_top_k=top_k, filters=filters)
         nodes = await retriever.aretrieve(query)
         
         # Format and send context
