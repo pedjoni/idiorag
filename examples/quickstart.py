@@ -145,8 +145,13 @@ async def test_api():
             if response.status_code == 200:
                 result = response.json()
                 answer = result['answer']
+                metadata = result.get('metadata', {})
                 print("✅ Query endpoint responded")
                 print(f"   Answer: {answer[:100]}...")
+                print(f"   Retrieval Metadata:")
+                print(f"      Total documents in index: {metadata.get('total_documents_in_index', 'N/A')}")
+                print(f"      Documents retrieved: {metadata.get('documents_retrieved', 'N/A')}")
+                print(f"      Avg relevance score: {metadata.get('avg_relevance_score', 'N/A')}")
                 if "Error processing query" in answer:
                     print("❌ Query returned an error instead of answer")
                     return False

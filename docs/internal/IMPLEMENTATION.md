@@ -74,6 +74,7 @@ IdioRAG is a production-ready RAG framework with user isolation, JWT authenticat
 - Chain-of-Thought (CoT) reasoning support (`use_cot` parameter)
 - Configurable LLM behavior (stop sequences, temperature, max_tokens)
 - Better prompts for concise answers
+- Retrieval metadata in responses (`total_documents_in_index`, `documents_retrieved`, `avg_relevance_score`)
 - [test_streaming.py](../../test_streaming.py) for validation
 
 **3.2 - Pluggable Chunking Architecture**

@@ -33,6 +33,14 @@ class ContextChunk(BaseModel):
     metadata: dict | None = None
 
 
+class RetrievalMetadata(BaseModel):
+    """Metadata about retrieval quality."""
+    
+    total_documents_in_index: int = Field(..., description="Total number of documents in user's index")
+    documents_retrieved: int = Field(..., description="Number of documents retrieved for this query")
+    avg_relevance_score: float = Field(..., description="Average relevance score of retrieved documents")
+
+
 class QueryResponse(BaseModel):
     """Response model for RAG query."""
     
@@ -40,6 +48,7 @@ class QueryResponse(BaseModel):
     answer: str
     context: List[ContextChunk]
     tokens_used: int | None = None
+    metadata: RetrievalMetadata
 
 
 @router.post(
@@ -95,15 +104,25 @@ async def query_rag(
                 for chunk in response_data["context"]
             ],
             tokens_used=response_data.get("tokens_used"),
+            metadata=RetrievalMetadata(
+                total_documents_in_index=response_data["metadata"]["total_documents_in_index"],
+                documents_retrieved=response_data["metadata"]["documents_retrieved"],
+                avg_relevance_score=response_data["metadata"]["avg_relevance_score"],
+            ),
         )
     except Exception as e:
         logger.error(f"Error processing query: {e}", exc_info=True)
-        # Return error message as answer
+        # Return error message as answer with empty metadata
         return QueryResponse(
             query=request.query,
             answer=f"Error processing query: {str(e)}",
             context=[],
-            tokens_used=None
+            tokens_used=None,
+            metadata=RetrievalMetadata(
+                total_documents_in_index=0,
+                documents_retrieved=0,
+                avg_relevance_score=0.0,
+            ),
         )
 
 

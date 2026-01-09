@@ -159,10 +159,11 @@ All endpoints except `/health` require JWT Bearer token authentication.
 ### Query
 - `POST /api/v1/query` - Query with LLM-generated answers
   - Supports `use_cot` parameter for Chain-of-Thought reasoning
-  - Returns answer with source documents
+  - Returns answer with source documents and retrieval metadata
 - `POST /api/v1/query/chat` - Streaming query with Server-Sent Events
   - Real-time token streaming
   - Same CoT support as `/query`
+  - Includes retrieval metadata in initial context event
 
 ## Usage Example
 
@@ -186,6 +187,27 @@ response = requests.post(
     }
 )
 
+# Query with response metadata
+response = requests.post(
+    "http://localhost:8000/api/v1/query",
+    headers=headers,
+    json={
+        "query": "What lures work best for smallmouth bass in June?",
+        "use_cot": False
+    }
+)
+result = response.json()
+
+# Access retrieval quality metadata
+print(f"Total documents in index: {result['metadata']['total_documents_in_index']}")
+print(f"Documents retrieved: {result['metadata']['documents_retrieved']}")
+print(f"Avg relevance score: {result['metadata']['avg_relevance_score']}")
+
+# Your app can use this to provide user feedback:
+# - If total_documents_in_index < 10: "Add more logs for better insights"
+# - If documents_retrieved == 0: "No matching logs found"
+# - If avg_relevance_score < 0.7: "Low confidence answer"
+
 # Query with streaming
 import sseclient
 
@@ -201,8 +223,30 @@ response = requests.post(
 
 client = sseclient.SSEClient(response)
 for event in client.events():
+    # First event includes metadata
+    if event.event == "context":
+        data = json.loads(event.data)
+        print(f"Retrieved {data['metadata']['documents_retrieved']} docs")
     print(event.data, end='', flush=True)
 ```
+
+## Retrieval Metadata
+
+Every query response includes metadata about retrieval quality to help client applications provide better user experience:
+
+- **`total_documents_in_index`**: Total number of documents in the user's index
+  - Use this to determine if the user has enough data for meaningful results
+  - Example: Show "Add more documents" prompt if count is low
+  
+- **`documents_retrieved`**: Number of documents actually retrieved for this query
+  - Indicates how many relevant matches were found
+  - A value of 0 means no relevant context was found
+  
+- **`avg_relevance_score`**: Average similarity score of retrieved documents (0.0-1.0)
+  - Higher scores indicate better matches
+  - Use to show confidence levels or disclaimers for low-quality matches
+
+This metadata empowers your application to make domain-specific decisions about when to prompt users for more data or when to display confidence warnings.
 
 ## Contributing
 
