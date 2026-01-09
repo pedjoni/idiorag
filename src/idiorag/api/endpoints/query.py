@@ -169,8 +169,14 @@ async def chat_stream(
                 temperature=request.temperature,
                 use_cot=request.use_cot,
             ):
+                # Log context events with metadata
+                if event.get("type") == "context":
+                    logger.info(f"SSE sending context event with metadata: {event.get('metadata')}")
+                
                 # Send as Server-Sent Event
-                yield f"data: {json.dumps(event)}\n\n"
+                event_data = json.dumps(event)
+                logger.debug(f"SSE event: {event_data[:200]}")
+                yield f"data: {event_data}\n\n"
         except Exception as e:
             logger.error(f"Error in chat stream: {e}", exc_info=True)
             yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
