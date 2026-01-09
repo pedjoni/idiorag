@@ -9,9 +9,12 @@ from llama_index.core.llms import CustomLLM, CompletionResponse, LLMMetadata
 from llama_index.vector_stores.postgres import PGVectorStore
 import httpx
 from typing import Any
+from sqlalchemy import select, func as sql_func
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..config import get_settings
 from ..logging_config import get_logger
+from ..database import Document, async_session_factory
 
 logger = get_logger(__name__)
 
@@ -303,6 +306,27 @@ async def delete_document_from_index(document_id: str, user_id: str) -> None:
         pass
 
 
+async def _get_total_documents_count(user_id: str) -> int:
+    """Get total document count for a user.
+    
+    Args:
+        user_id: User identifier
+    
+    Returns:
+        int: Total number of documents in the user's index
+    """
+    try:
+        async with async_session_factory() as session:
+            result = await session.execute(
+                select(sql_func.count(Document.id))
+                .where(Document.user_id == user_id)
+            )
+            return result.scalar_one()
+    except Exception as e:
+        logger.warning(f"Error counting documents for user {user_id}: {e}")
+        return 0
+
+
 async def query_with_context(
     query: str,
     user_id: str,
@@ -392,6 +416,14 @@ async def query_with_context(
                 "metadata": node.metadata,
             })
         
+        # Collect metadata about retrieval quality
+        total_docs = await _get_total_documents_count(user_id)
+        documents_retrieved = len(context_chunks)
+        avg_relevance_score = (
+            sum(chunk["score"] for chunk in context_chunks) / documents_retrieved
+            if documents_retrieved > 0 else 0.0
+        )
+        
         logger.info(f"Query completed with {len(context_chunks)} context chunks")
         logger.info(f"LLM Answer: {str(response)[:200]}...")
         
@@ -400,6 +432,11 @@ async def query_with_context(
             "answer": str(response),
             "context": context_chunks,
             "tokens_used": None,  # TODO: Track token usage if LLM provides it
+            "metadata": {
+                "total_documents_in_index": total_docs,
+                "documents_retrieved": documents_retrieved,
+                "avg_relevance_score": round(avg_relevance_score, 3),
+            },
         }
         
     except Exception as e:
@@ -472,9 +509,22 @@ async def query_with_context_stream(
                 "metadata": node.metadata,
             })
         
+        # Collect metadata about retrieval quality
+        total_docs = await _get_total_documents_count(user_id)
+        documents_retrieved = len(context_chunks)
+        avg_relevance_score = (
+            sum(chunk["score"] for chunk in context_chunks) / documents_retrieved
+            if documents_retrieved > 0 else 0.0
+        )
+        
         yield {
             "type": "context",
-            "chunks": context_chunks
+            "chunks": context_chunks,
+            "metadata": {
+                "total_documents_in_index": total_docs,
+                "documents_retrieved": documents_retrieved,
+                "avg_relevance_score": round(avg_relevance_score, 3),
+            }
         }
         
         # Build prompt with context

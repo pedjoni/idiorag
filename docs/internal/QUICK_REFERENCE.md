@@ -182,7 +182,13 @@ response = requests.post(
         "top_k": 5
     }
 )
-answer = response.json()["answer"]
+result = response.json()
+answer = result["answer"]
+
+# Check retrieval quality metadata
+print(f"Total docs: {result['metadata']['total_documents_in_index']}")
+print(f"Retrieved: {result['metadata']['documents_retrieved']}")
+print(f"Avg score: {result['metadata']['avg_relevance_score']}")
 ```
 
 ### cURL
