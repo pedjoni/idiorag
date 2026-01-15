@@ -148,7 +148,7 @@ def get_llm() -> OpenAICompatibleLLM:
     
     if _llm is None:
         settings = get_settings()
-        logger.info(f"Initializing LLM client: {settings.llm_model_name}")
+        logger.info(f"Initializing LLM client: {settings.llm_model_name} at {settings.llm_api_url}")
         
         _llm = OpenAICompatibleLLM(
             api_base=settings.llm_api_url,
