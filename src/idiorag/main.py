@@ -44,6 +44,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Register with custom parameters
     register_chunker("fishing_log", lambda: FishingLogChunker(mode="hybrid", include_weather=True))
     logger.info("Registered fishing_log chunker with mode='hybrid', include_weather=True")
+
+    # Log LLM configuration
+    logger.info(f"LLM config: model={settings.llm_model_name}, url={settings.llm_api_url}")
+    logger.info(f"LLM params: temperature={settings.llm_temperature}, max_tokens={settings.llm_max_tokens}")
     
     # TODO: Initialize LlamaIndex
     # TODO: Load embedding model
